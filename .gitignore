@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual envs
+.venv/
+venv/
+env/
+.venv311/
+
+# Project data / outputs (generated)
+data/*.db
+data/output/
+data/*.mp4
+*.pt
+
+# Secrets (never commit real keys)
+.env
+.env.local
+
+# Bundled binaries (downloaded, not source)
+tools/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
