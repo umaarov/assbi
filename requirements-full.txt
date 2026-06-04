@@ -1,0 +1,19 @@
+# Full stack for real video analysis + dashboard (local machines).
+# NOTE: the ML/vision wheels target Python 3.10–3.12. The synthetic demo, CLI,
+# reporting and chatbot run on the lightweight stack (requirements.txt).
+
+# --- Core BI / config / dashboard / chatbot ---
+pyyaml>=6.0
+pandas>=2.0
+streamlit>=1.30
+openpyxl>=3.1
+requests>=2.31
+
+# --- Computer vision + detection (backend = yolo) ---
+ultralytics>=8.1          # YOLOv8/v11 object detection
+opencv-python>=4.8        # OpenCV video analytics
+numpy>=1.24
+torch>=2.1                # pulled in by ultralytics; install matching CUDA build if GPU
+
+# --- Video acquisition ---
+yt-dlp>=2024.1            # download / stream the assignment YouTube video

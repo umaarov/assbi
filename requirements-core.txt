@@ -1,7 +1,0 @@
-# Minimal dependencies for the dependency-light demo (CLI + reporting + chatbot).
-# The synthetic pipeline actually needs NOTHING beyond the Python stdlib; these
-# are only required for the YAML config and the Streamlit dashboard.
-pyyaml>=6.0
-pandas>=2.0
-streamlit>=1.30
-openpyxl>=3.1          # Excel workbook in the Power BI export pack

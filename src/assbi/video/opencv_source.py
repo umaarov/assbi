@@ -27,7 +27,7 @@ class OpenCVVideoSource(VideoSource):
             import cv2  # noqa: WPS433 (deferred heavy import)
         except ImportError as exc:  # pragma: no cover - environment dependent
             raise RuntimeError(
-                "opencv-python is not installed. Run `pip install -r requirements.txt`."
+                "opencv-python is not installed. Run `pip install -r requirements-full.txt`."
             ) from exc
 
         self._cv2 = cv2

@@ -102,7 +102,7 @@ The line-counting requirement (people & cars crossing a line on
 Install the stack once:
 
 ```bash
-pip install -r requirements.txt          # ultralytics, opencv, torch, yt-dlp …
+pip install -r requirements-full.txt     # ultralytics, opencv, torch, yt-dlp …
 ```
 
 **Real-time, no download (recommended)** — resolve the stream to a direct media
@@ -193,8 +193,9 @@ A single command-center, organised into tabs:
 | ⚠️ Anomalies | Flagged surge/drop frames with scores. |
 | 🤖 Assistant | The embedded natural-language analytics chatbot. |
 
-The Live Monitor needs the full CV stack (`requirements.txt`); the other tabs
-only need `requirements-core.txt` (pyyaml, pandas, streamlit).
+The Live Monitor needs the full CV stack (`requirements-full.txt`); the other
+tabs only need `requirements.txt` (pyyaml, pandas, streamlit, requests). The
+deployed cloud dashboard uses the lightweight `requirements.txt`.
 
 ---
 

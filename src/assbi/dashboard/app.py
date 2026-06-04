@@ -118,7 +118,9 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
     except ImportError:
         st.error(
             "The live monitor needs the CV stack. Install it with:\n\n"
-            "```\npip install -r requirements.txt\n```"
+            "```\npip install -r requirements-full.txt\n```\n\n"
+            "(This is a local-only feature — the deployed cloud app serves the "
+            "recorded warehouse instead.)"
         )
         return
 

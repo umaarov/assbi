@@ -3,7 +3,7 @@
 Imports of ``ultralytics`` / ``cv2`` are deferred to construction time so the
 rest of the platform imports cleanly on machines without the heavy ML stack
 (e.g. the unit-test runner or the synthetic demo). Install the optional extras
-with ``pip install -r requirements.txt`` to enable it.
+with ``pip install -r requirements-full.txt`` to enable it.
 """
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ class YOLODetector(ObjectDetector):
             from ultralytics import YOLO  # noqa: WPS433 (deferred heavy import)
         except ImportError as exc:  # pragma: no cover - depends on environment
             raise RuntimeError(
-                "ultralytics is not installed. Run `pip install -r requirements.txt` "
+                "ultralytics is not installed. Run `pip install -r requirements-full.txt` "
                 "or use the SimulationDetector for a dependency-free demo."
             ) from exc
 
