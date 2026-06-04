@@ -14,7 +14,7 @@ import os
 import shutil
 from pathlib import Path
 
-DEFAULT_URL = "https://www.youtube.com/watch?v=7uG-gbg0I8Y"
+DEFAULT_URL = "https://www.youtube.com/watch?v=3nyPER2kzqk"  # EarthCam Live: Dublin, Ireland
 
 
 def ensure_js_runtime() -> bool:

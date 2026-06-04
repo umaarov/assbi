@@ -164,6 +164,7 @@ def cmd_download(args: argparse.Namespace) -> int:
             cookies_from_browser=args.cookies_from_browser,
             cookies_file=args.cookies_file,
             duration=args.duration,
+            max_height=args.max_height,
         )
     except Exception as exc:
         return _explain_source_error(exc)
@@ -308,6 +309,8 @@ def build_parser() -> argparse.ArgumentParser:
     dl.add_argument("--url", help="Video URL (default: assignment video)")
     dl.add_argument("--duration", type=float,
                     help="Download only the first N seconds (needs ffmpeg) — recommended for the live cam")
+    dl.add_argument("--max-height", type=int, default=360,
+                    help="Cap download resolution (default 360 keeps a 30-60 min clip small & fast to process)")
     _add_cookie_args(dl)
     dl.set_defaults(func=cmd_download)
 

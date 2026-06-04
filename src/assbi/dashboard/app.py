@@ -33,7 +33,7 @@ from assbi.reporting import KPISet, ReportBuilder  # noqa: E402
 load_env_file()  # pick up DEEPSEEK_API_KEY from a .env file if present
 st.set_page_config(page_title="ASSBI — Smart Surveillance BI", layout="wide", page_icon="🛰️")
 
-ASSIGNMENT_URL = "https://www.youtube.com/watch?v=7uG-gbg0I8Y"
+ASSIGNMENT_URL = "https://www.youtube.com/watch?v=3nyPER2kzqk"  # EarthCam Live: Dublin, Ireland
 
 
 @st.cache_resource
@@ -132,7 +132,7 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
         "Source",
         [
             "Local clip — data/source_video.mp4 (fast)",
-            "Assignment stream — Pattaya Beach Road (live, slower)",
+            "Assignment stream — Dublin, Ireland (live, slower)",
             "Custom URL / RTSP / file path",
             "Webcam 0",
         ],

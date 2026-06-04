@@ -98,7 +98,7 @@ OpenAI-compatible endpoint works by changing `base_url`/`model`).
 ## Running on the real YouTube video (full CV stack)
 
 The line-counting requirement (people & cars crossing a line on
-`https://www.youtube.com/watch?v=7uG-gbg0I8Y`) runs with the YOLO backend.
+`https://www.youtube.com/watch?v=3nyPER2kzqk`) runs with the YOLO backend.
 Install the stack once:
 
 ```bash
@@ -118,7 +118,7 @@ python -m assbi.cli dashboard            # launch the Streamlit BI dashboard
 ~5.5 h live cam). You can also stream any URL or a webcam:
 
 ```bash
-python -m assbi.cli run --source "https://youtu.be/7uG-gbg0I8Y" --backend yolo
+python -m assbi.cli run --source "https://youtu.be/3nyPER2kzqk" --backend yolo
 python -m assbi.cli run --source 0 --backend yolo          # local webcam
 ```
 
