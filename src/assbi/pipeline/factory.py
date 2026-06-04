@@ -28,12 +28,17 @@ def build_detector(config: AppConfig) -> ObjectDetector:
     backend = config.detection.backend.lower()
     if backend == "yolo":
         from ..detection.yolo_detector import YOLODetector
+        from ..domain.models import ObjectClass
 
+        wanted = [ObjectClass.from_label(c) for c in config.detection.classes]
+        wanted = [c for c in wanted if c is not None] or None  # None = all classes
         return YOLODetector(
             model_path=config.detection.model_path,
             confidence=config.detection.confidence,
             iou=config.detection.iou,
             device=config.detection.device,
+            classes=wanted,
+            imgsz=config.detection.imgsz,
         )
     if backend == "simulation":
         from ..detection.simulation_detector import SimulationDetector

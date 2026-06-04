@@ -17,8 +17,13 @@ env/
 
 # Project data / outputs (generated)
 data/*.db
+# SQLite WAL/shm sidecar files (transient)
+data/*.db-wal
+data/*.db-shm
 data/output/
 data/*.mp4
+# partial / incomplete downloads
+data/*.part
 *.pt
 
 # Secrets (never commit real keys)

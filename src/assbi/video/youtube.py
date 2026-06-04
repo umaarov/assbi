@@ -182,6 +182,7 @@ def download_video(
         "outtmpl": str(target),
         "quiet": False,
         "noplaylist": True,
+        "overwrites": True,   # always fetch fresh; never silently reuse a stale clip
         **_cookie_opts(cookies_from_browser, cookies_file),
     }
     if remote_components:

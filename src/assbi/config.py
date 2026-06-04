@@ -48,6 +48,10 @@ class DetectionConfig:
     confidence: float = 0.35
     iou: float = 0.5
     device: str | None = None
+    # Object classes to detect/count. Empty = all supported classes; set e.g.
+    # ["person"] to count people only and ignore vehicles.
+    classes: list[str] = field(default_factory=list)
+    imgsz: int = 640                     # YOLO input size; lower (e.g. 416) = faster on CPU
 
 
 @dataclass

@@ -30,6 +30,7 @@ class YOLODetector(ObjectDetector):
         iou: float = 0.5,
         device: str | None = None,
         classes: list[ObjectClass] | None = None,
+        imgsz: int = 640,
     ) -> None:
         try:
             from ultralytics import YOLO  # noqa: WPS433 (deferred heavy import)
@@ -43,6 +44,7 @@ class YOLODetector(ObjectDetector):
         self.confidence = confidence
         self.iou = iou
         self.device = device
+        self.imgsz = imgsz       # smaller = much faster on CPU (e.g. 416 for 360p video)
         wanted = classes or list(_COCO_TO_CLASS.values())
         self._wanted = set(wanted)
         # Restrict YOLO to the COCO ids we map, for speed.
@@ -58,6 +60,7 @@ class YOLODetector(ObjectDetector):
             frame.image,
             conf=self.confidence,
             iou=self.iou,
+            imgsz=self.imgsz,
             classes=self._coco_filter or None,
             device=self.device,
             verbose=False,

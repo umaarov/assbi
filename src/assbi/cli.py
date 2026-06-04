@@ -58,6 +58,8 @@ def cmd_run(args: argparse.Namespace) -> int:
     if args.frames:
         config.video.total_frames = args.frames
         config.video.max_frames = args.frames
+    if getattr(args, "stride", None):
+        config.video.stride = args.stride
 
     # --stream: pull the assignment video live (no download). Implies YOLO,
     # since the synthetic backend ignores real frames.
@@ -171,6 +173,64 @@ def cmd_download(args: argparse.Namespace) -> int:
     print(f"✓ Saved to {path}")
     print(f"Now run: python -m assbi.cli run --source {path} --backend yolo --render")
     return 0
+
+
+def cmd_record(args: argparse.Namespace) -> int:
+    """Record N seconds of the LIVE stream to a file in real time, via ffmpeg.
+
+    Unlike ``download`` (which can only grab the cam's short rewind buffer), this
+    follows the live edge and captures as the stream airs, so it can produce
+    hours of footage — it just takes that long in wall-clock time.
+    """
+    import os
+    import subprocess
+
+    from .video.youtube import DEFAULT_URL, ensure_js_runtime, find_ffmpeg, stream_url
+
+    config = AppConfig.load(args.config)
+    url = args.url or DEFAULT_URL
+    ensure_js_runtime()
+    ff_dir = find_ffmpeg()
+    if not ff_dir:
+        print("✗ ffmpeg not found. Install it (winget install Gyan.FFmpeg) or place "
+              "ffmpeg.exe in ./tools/.")
+        return 1
+    ffmpeg = os.path.join(ff_dir, "ffmpeg.exe" if os.name == "nt" else "ffmpeg")
+
+    try:
+        media = stream_url(
+            url,
+            max_height=args.max_height,
+            cookies_from_browser=args.cookies_from_browser,
+            cookies_file=args.cookies_file,
+            remote_components=config.youtube.remote_components,
+        )
+    except Exception as exc:
+        return _explain_source_error(exc)
+
+    out = args.out or "data/source_video.mp4"
+    from pathlib import Path
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    mins = args.duration / 60.0
+    print(f"● Recording the live stream to {out} for {args.duration:.0f}s (~{mins:.0f} min) …")
+    print("  This runs in real time — leave it until it finishes (Ctrl+C stops early but keeps what's recorded).")
+    cmd = [
+        ffmpeg, "-y",
+        "-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "5",
+        "-i", media,
+        "-t", str(args.duration),
+        "-an", "-c:v", "copy",          # drop audio, copy video (no re-encode)
+        "-loglevel", "warning", "-stats",
+        out,
+    ]
+    rc = subprocess.call(cmd)
+    if rc == 0 or os.path.isfile(out):
+        print(f"\n✓ Saved {out}")
+        print(f"Now process it:  python -m assbi.cli run --source {out} "
+              f"--backend yolo --session dublin_2h --stride 8")
+        return 0
+    print(f"✗ ffmpeg exited with {rc}")
+    return rc
 
 
 def _explain_source_error(exc: Exception) -> int:
@@ -289,6 +349,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--backend", choices=["simulation", "yolo"], help="Detection backend")
     run.add_argument("--session", help="Session id (default: timestamp)")
     run.add_argument("--frames", type=int, help="Limit number of frames")
+    run.add_argument("--stride", type=int,
+                     help="Process every Nth frame (higher = cover more footage faster; e.g. 10 for a long capture)")
     run.add_argument("--render", action="store_true", help="Write an annotated output video")
     run.add_argument("--privacy", choices=["off", "blur", "pixelate"],
                      help="Anonymise detected people in the rendered video (GDPR)")
@@ -313,6 +375,16 @@ def build_parser() -> argparse.ArgumentParser:
                     help="Cap download resolution (default 360 keeps a 30-60 min clip small & fast to process)")
     _add_cookie_args(dl)
     dl.set_defaults(func=cmd_download)
+
+    rec = sub.add_parser("record", help="Record N seconds of the live stream to a file in real time (needs ffmpeg)")
+    rec.add_argument("--url", help="Video URL (default: assignment video)")
+    rec.add_argument("--duration", type=float, default=7200.0,
+                     help="Seconds to record in real time (default 7200 = 2 hours)")
+    rec.add_argument("--max-height", type=int, default=360,
+                     help="Cap recording resolution (default 360)")
+    rec.add_argument("--out", help="Output file (default data/source_video.mp4)")
+    _add_cookie_args(rec)
+    rec.set_defaults(func=cmd_record)
 
     ds = sub.add_parser("dataset", help="Show a summary of the analytics dataset (warehouse)")
     ds.set_defaults(func=cmd_dataset)

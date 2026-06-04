@@ -9,6 +9,8 @@ detection:
   confidence: 0.35
   iou: 0.5
   device: null               # e.g. "cpu", "cuda:0"; null = auto
+  classes: ["person"]        # count people only (omit/empty = also count vehicles)
+  imgsz: 416                 # YOLO input size; 416 is much faster than 640 on CPU for 360p video
 
 tracking:
   iou_threshold: 0.3

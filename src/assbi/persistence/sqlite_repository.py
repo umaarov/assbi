@@ -82,8 +82,20 @@ class SQLiteAnalyticsRepository(AnalyticsRepository):
         # reads it from a different thread than the one that created it. Access
         # is serialised (one pipeline writer; read-only dashboard), so sharing
         # the connection across threads is safe here.
-        self._conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
+        # timeout: wait (not error) if another connection holds a lock.
+        self._conn = sqlite3.connect(
+            str(self.db_path), check_same_thread=False, timeout=30.0
+        )
         self._conn.row_factory = sqlite3.Row
+        self._conn.execute("PRAGMA busy_timeout=30000")
+        # WAL lets the read-only dashboard and the pipeline writer run at the same
+        # time without "database is locked". Switching modes needs exclusive access,
+        # so it's best-effort: if another connection (e.g. an open dashboard) holds
+        # the file we keep the existing mode rather than crashing the run.
+        try:
+            self._conn.execute("PRAGMA journal_mode=WAL")
+        except sqlite3.OperationalError:
+            pass
         self._conn.executescript(_SCHEMA)
         self._conn.commit()
 
