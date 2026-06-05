@@ -342,6 +342,193 @@ def _render_dataset(config: AppConfig, session_id: str) -> None:
     st.caption("Full Power BI star-schema pack: **Overview tab → Export**, or "
                "`python -m assbi.cli powerbi`.")
 
+    _render_training()
+
+
+# Paths to the custom training dataset + fine-tune run (generated artifacts).
+_DATASET_DIR = Path("data/dataset")
+_RUN_DIR = Path("runs/assbi/finetune")
+_MODEL_CHECK_DIR = Path("data/output/model_check")
+
+
+@st.cache_data(show_spinner=False)
+def _dataset_counts(dataset_dir: str) -> dict | None:
+    d = Path(dataset_dir)
+    if not d.exists():
+        return None
+    train = sorted((d / "images" / "train").glob("*.jpg"))
+    val = sorted((d / "images" / "val").glob("*.jpg"))
+    labels = 0
+    for txt in (d / "labels").rglob("*.txt"):
+        labels += sum(1 for line in txt.read_text(encoding="utf-8").splitlines() if line.strip())
+    data_yaml = d / "data.yaml"
+    return {
+        "train": len(train),
+        "val": len(val),
+        "labels": labels,
+        "data_yaml": data_yaml.read_text(encoding="utf-8") if data_yaml.exists() else "",
+    }
+
+
+@st.cache_data(show_spinner=False)
+def _model_metrics(run_dir: str) -> dict | None:
+    import pandas as pd
+
+    csv = Path(run_dir) / "results.csv"
+    if not csv.exists():
+        return None
+    df = pd.read_csv(csv)
+    df.columns = [c.strip() for c in df.columns]
+    last = df.iloc[-1]
+
+    def g(key: str):
+        return round(float(last[key]), 4) if key in df.columns else None
+
+    return {
+        "mAP50": g("metrics/mAP50(B)"),
+        "mAP50-95": g("metrics/mAP50-95(B)"),
+        "precision": g("metrics/precision(B)"),
+        "recall": g("metrics/recall(B)"),
+        "epochs": int(last["epoch"]) if "epoch" in df.columns else len(df),
+    }
+
+
+def _render_training() -> None:
+    """Custom image dataset + fine-tuned model: counts, metrics and screenshots."""
+    st.divider()
+    st.subheader("🧠 Custom dataset & fine-tuned model")
+    st.caption(
+        "Beyond the analytics warehouse above, ASSBI also builds its **own image "
+        "training dataset** from the footage and **fine-tunes YOLOv8n** on it — so "
+        "the detector is trained on this exact camera, not just generic COCO."
+    )
+
+    ds = _dataset_counts(str(_DATASET_DIR))
+    metrics = _model_metrics(str(_RUN_DIR))
+
+    if ds is None and metrics is None:
+        st.info(
+            "No custom dataset or trained model found yet. Generate them with:\n\n"
+            "```\npython -m assbi.cli build-dataset --source data/source_video.mp4 --frames 500\n"
+            "python -m assbi.cli train --data data/dataset/data.yaml --epochs 30 --imgsz 416\n```"
+        )
+        return
+
+    # -- dataset summary --------------------------------------------------
+    if ds is not None:
+        st.markdown("##### 📦 Training dataset (`data/dataset/`)")
+        c = st.columns(4)
+        c[0].metric("Train images", f"{ds['train']:,}")
+        c[1].metric("Val images", f"{ds['val']:,}")
+        c[2].metric("Person labels", f"{ds['labels']:,}")
+        c[3].metric("Classes", "1 (person)")
+        if ds["data_yaml"]:
+            with st.expander("data.yaml (YOLO dataset descriptor)"):
+                st.code(ds["data_yaml"], language="yaml")
+
+    # -- model metrics ----------------------------------------------------
+    if metrics is not None:
+        st.markdown(f"##### 🎯 Fine-tuned model metrics ({metrics['epochs']} epochs)")
+        m = st.columns(4)
+        if metrics["mAP50"] is not None:
+            m[0].metric("mAP@50", f"{metrics['mAP50']:.3f}")
+        if metrics["mAP50-95"] is not None:
+            m[1].metric("mAP@50-95", f"{metrics['mAP50-95']:.3f}")
+        if metrics["precision"] is not None:
+            m[2].metric("Precision", f"{metrics['precision']:.3f}")
+        if metrics["recall"] is not None:
+            m[3].metric("Recall", f"{metrics['recall']:.3f}")
+        best = _RUN_DIR / "weights" / "best.pt"
+        if best.exists():
+            st.caption(f"Trained weights: `{best.as_posix()}` · metrics measured on the "
+                       f"{ds['val'] if ds else 0}-image validation hold-out.")
+
+    # -- screenshots gallery ---------------------------------------------
+    gallery = [
+        (_RUN_DIR / "val_batch0_pred.jpg", "Model predictions on validation frames"),
+        (_RUN_DIR / "val_batch0_labels.jpg", "Ground-truth labels (same frames)"),
+        (_RUN_DIR / "results.png", "Training curves (loss ↓, mAP ↑)"),
+        (_RUN_DIR / "confusion_matrix.png", "Confusion matrix"),
+        (_RUN_DIR / "BoxPR_curve.png", "Precision–Recall curve"),
+        (_RUN_DIR / "train_batch0.jpg", "Labelled training batch"),
+    ]
+    present = [(p, cap) for p, cap in gallery if p.exists()]
+    if present:
+        st.markdown("##### 🖼️ Training evidence")
+        cols = st.columns(3)
+        for i, (p, cap) in enumerate(present):
+            cols[i % 3].image(str(p), caption=cap, width="stretch")
+
+    # -- live detections on real footage ---------------------------------
+    checks = sorted(_MODEL_CHECK_DIR.glob("*.jpg")) if _MODEL_CHECK_DIR.exists() else []
+    if checks:
+        st.markdown("##### 👁️ The fine-tuned model on real footage")
+        st.caption("Frames run through the trained model — boxes are live person detections.")
+        cols = st.columns(min(4, len(checks)))
+        for i, p in enumerate(checks):
+            cols[i % len(cols)].image(str(p), caption=p.stem, width="stretch")
+
+    _render_chatbot_nlu()
+
+
+_INTENT_DIR = Path("models/intent")
+
+
+@st.cache_data(show_spinner=False)
+def _chatbot_metrics(intent_dir: str) -> dict | None:
+    import json
+
+    f = Path(intent_dir) / "metrics.json"
+    if not f.exists():
+        return None
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
+def _render_chatbot_nlu() -> None:
+    """Trained intent classifier (the chatbot's natural-language understanding)."""
+    cm = _chatbot_metrics(str(_INTENT_DIR))
+    if cm is None:
+        return
+    st.divider()
+    st.subheader("💬 Chatbot NLU — trained intent classifier")
+    approach = cm.get("approach", "neural net (bag-of-words → MLP)")
+    st.caption(
+        f"The chatbot's *understanding* is a model **trained** to map a question to "
+        f"an intent — {approach}. The matched intent then pulls the real number from "
+        "the warehouse, so answers stay grounded. (The reply wording can use the LLM; "
+        "the **classification is trained**.)"
+    )
+    # Support both the transfer-learning and the bag-of-words metrics schemas.
+    acc = cm.get("test_accuracy", cm.get("accuracy"))
+    c = st.columns(4)
+    c[0].metric("Test accuracy", f"{acc:.0%}" if acc is not None else "—")
+    if cm.get("cv5_mean") is not None:
+        c[1].metric("5-fold CV", f"{cm['cv5_mean']:.0%} ± {cm.get('cv5_std', 0):.0%}")
+    else:
+        c[1].metric("Macro F1", f"{cm['macro_f1']:.2f}")
+    if cm.get("hard_eval_accuracy") is not None:
+        c[2].metric("Hard novel set", f"{cm['hard_eval_accuracy']:.0%}",
+                    help="Accuracy on hand-written paraphrases never seen in training")
+    else:
+        c[2].metric("Intents", len(cm.get("intents", [])))
+    c[3].metric("Train / test", f"{cm['n_train']} / {cm['n_test']}")
+    conf = _INTENT_DIR / "confusion_matrix.png"
+    ds = _INTENT_DIR / "dataset.csv"
+    cols = st.columns([3, 2])
+    if conf.exists():
+        cols[0].image(str(conf), caption="Intent confusion matrix (test set)", width="stretch")
+    with cols[1]:
+        st.markdown("**Recognised intents**")
+        st.write(", ".join(cm.get("intents", [])))
+        if ds.exists():
+            import pandas as pd
+
+            df = pd.read_csv(ds)
+            st.caption(f"Training dataset: {len(df):,} labelled questions "
+                       f"(`{ds.as_posix()}`)")
+            st.download_button("⬇ Download intent dataset CSV", df.to_csv(index=False),
+                               "intent_dataset.csv", "text/csv")
+
 
 def _render_kpis(kpis: KPISet) -> None:
     c = st.columns(6)

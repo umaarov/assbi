@@ -1,0 +1,1100 @@
+text,intent
+please how many entered for this session,people_in
+can you tell me what's the big picture exactly,summary
+which slot saw the most movement?,busiest_hour
+tell me general summary?,summary
+how many made their way out,people_out
+how many came inward,people_in
+please what can you answer,help
+did anything unusual get flagged right now,anomalies
+could you tell me yo,greet
+exits count overall,people_out
+just curious how many each hour for this session,hourly
+could you tell me biggest crowd recorded,peak
+how many crossed altogether,people_total
+so which hour was busiest,busiest_hour
+just curious guide me overall,help
+can you tell me how busy with people,people_total
+forecast the next intervals?,forecast
+were there anomalies for this session,anomalies
+so count of people out in this footage,people_out
+most crowded it got in this footage,peak
+can you tell me what comes next please,forecast
+tell me detection accuracy please,confidence
+hey were there anomalies in this footage,anomalies
+i want to know breakdown by hour for this session,hourly
+can you tell me how many went outward for this session,people_out
+tell me how many came through inbound,people_in
+number of pedestrians leaving for this session,people_out
+is it getting busier or quieter,forecast
+breakdown by hour in this footage,hourly
+can you tell me how good is the detection quality,confidence
+tell me what info do you have,help
+total entering the area overall,people_in
+could you tell me show me the options please,help
+tell me people in the last hour,last_window
+so what info do you have,help
+tell me where is footfall heading exactly,forecast
+tell me how many entered in the last 45 minutes,last_window
+how many came through inbound,people_in
+people in the last hour for this session,last_window
+count of people in right now,people_in
+can you tell me peak time of day for this session,busiest_hour
+can you tell me how does this work exactly,help
+i want to know how many people in total,people_total
+quick question busiest moment exactly,peak
+please anything out of the ordinary overall,anomalies
+tell me how many in the last 10 minutes exactly,last_window
+in the previous twenty minutes how many walked through,last_window
+just curious what can you tell me,help
+people out,people_out
+general summary exactly,summary
+please what was the peak crowd for this session,peak
+quick question what is the accuracy,confidence
+so what time of day was heaviest,busiest_hour
+anomaly count,anomalies
+how packed did it get at most please,peak
+how many in the last 10 minutes,last_window
+so inbound people count overall,people_in
+anything strange right now,anomalies
+please anomaly count overall,anomalies
+how many headed inside in this footage,people_in
+hey counts for every hour right now,hourly
+please tell me everything in this footage,summary
+so inbound people count exactly,people_in
+tell me count of people out in this footage,people_out
+so what happened overall,summary
+please most crowded it got please,peak
+just curious recently how many came through right now,last_window
+so peak number of people exactly,peak
+just curious greetings right now,greet
+so headcount that exited,people_out
+so hiya overall,greet
+give me the hourly breakdown overall,hourly
+did the crowd do anything odd in this footage,anomalies
+quick question what's the average certainty,confidence
+were there any surges right now,anomalies
+what will the crowd do next in this footage,forecast
+"hey, you there? please",greet
+peak time of day,busiest_hour
+please what time of day was heaviest for this session,busiest_hour
+average confidence,confidence
+how reliable are the detections,confidence
+what's up,greet
+howdy in this footage,greet
+please how confident is the model exactly,confidence
+quick question how many people overall?,people_total
+forecast the next intervals,forecast
+hey buddy,greet
+i want to know what was the peak crowd in this footage,peak
+how many in the past 15 minutes overall,last_window
+could you tell me footfall during the last 5 mins,last_window
+so predict the crowd overall,forecast
+please how many people went out,people_out
+could you tell me what's the overall report for this session,summary
+just curious what happened in the final 15 minutes,last_window
+how trustworthy are these detections please,confidence
+tell me give me some example questions,help
+please how packed did it get at most,peak
+hey when did footfall peak in this footage,busiest_hour
+split the counts by hour,hourly
+number of pedestrians entering,people_in
+crowd prediction,forecast
+tell me what can you do,help
+high level summary right now,summary
+predict the crowd right now,forecast
+so is the crowd rising or falling?,forecast
+hey which slot saw the most movement?,busiest_hour
+please hello assistant?,greet
+can you tell me when were the most crossings,busiest_hour
+quick question breakdown by hour please,hourly
+when was the crowd biggest?,peak
+outbound people count?,people_out
+can you tell me anything out of the ordinary,anomalies
+overview please please,summary
+just curious how many folks arrived,people_in
+counts for every hour?,hourly
+can you tell me busiest hour overall,busiest_hour
+just curious how many people in total exactly,people_total
+can you tell me which minute had most people out for this session,busiest_hour
+how many humans crossed the line,people_total
+just curious hi bot in this footage,greet
+what's the forecast,forecast
+could you tell me how busy in the last 2 hours for this session,last_window
+please count of people in,people_in
+so how accurate is it exactly,confidence
+can you tell me high level summary for this session,summary
+how confident is the model,confidence
+i want to know hiya exactly,greet
+can you tell me what's the max crowd right now,peak
+so grand total of crossings,people_total
+so peak density for this session,peak
+i want to know how many came through inbound,people_in
+mean confidence,confidence
+were there anomalies,anomalies
+so good morning for this session,greet
+what time was the peak?,busiest_hour
+so what are the kpis,summary
+could you tell me what time was the peak for this session,busiest_hour
+help right now,help
+hey what can you do?,help
+hey is the crowd rising or falling right now,forecast
+tell me people out,people_out
+guide me,help
+quick question how many left overall,people_out
+any unusual activity for this session,anomalies
+tell me how many crossed in the past hour overall,last_window
+so busiest moment,peak
+unusual moments,anomalies
+hey show the per-hour table,hourly
+just curious what's the average certainty in this footage,confidence
+just curious what can you do,help
+quick question number who walked inward,people_in
+hey list what you can report,help
+can you tell me how many each hour in this footage,hourly
+quick question count of people out in this footage,people_out
+i want to know which minute had most people out,busiest_hour
+hey any unusual activity in this footage,anomalies
+please unusual moments,anomalies
+hey unusual moments for this session,anomalies
+number of pedestrians leaving,people_out
+so any weird spikes in the crowd for this session,anomalies
+what is the accuracy,confidence
+so confidence score,confidence
+what's the max crowd exactly,peak
+i want to know how many made their way out,people_out
+hey guide me for this session,help
+please show the per-hour table,hourly
+i want to know how accurate is it?,confidence
+so number who walked out the other side,people_out
+so anomaly count overall,anomalies
+i want to know confidence level of the model?,confidence
+tell me people in,people_in
+just curious what questions can i ask,help
+what will the crowd do next?,forecast
+what can you answer,help
+detection accuracy in this footage,confidence
+hey key numbers please exactly,summary
+i want to know what can you tell me,help
+tell me recent crossings last 10 min,last_window
+just curious combined in and out count exactly,people_total
+please split the counts by hour overall,hourly
+so busiest hour exactly,busiest_hour
+just curious did anything unusual get flagged,anomalies
+please number of pedestrians leaving please,people_out
+please recap the whole thing?,summary
+please last hour footfall?,last_window
+tell me predict the crowd?,forecast
+so tell me everything overall,summary
+how many people went in?,people_in
+were there abnormal crowd levels in this footage,anomalies
+could you tell me exits count for this session,people_out
+recent crossings last 10 min,last_window
+tell me did anything abnormal happen,anomalies
+total entering the area exactly,people_in
+what was the crowd maximum in this footage,peak
+when was the crowd biggest,peak
+help,help
+hey how many each hour exactly,hourly
+footfall by hour right now,hourly
+quick question what's the overall report exactly,summary
+how busy in the last 2 hours,last_window
+please were there sudden surges or drops,anomalies
+quick question what's the detection confidence in this footage,confidence
+footfall total,people_total
+please in the previous twenty minutes how many walked through,last_window
+could you tell me anything strange exactly,anomalies
+"hey, you there? in this footage",greet
+count of people in,people_in
+what's the average certainty,confidence
+quick question morning for this session,greet
+tell me largest crowd size please,peak
+can you tell me breakdown by hour?,hourly
+good morning,greet
+please full report for this session,summary
+i want to know full report for this session,summary
+quick question number of pedestrians entering exactly,people_in
+can you tell me what was the busiest moment in time exactly,busiest_hour
+quick question what are you capable of right now,help
+hi please,greet
+overview please,summary
+can you tell me most crowded it got please,peak
+good evening?,greet
+what hour had most traffic please,busiest_hour
+so footfall total please,people_total
+can you tell me morning?,greet
+please how many humans crossed the line overall,people_total
+what info do you have exactly,help
+show the per-hour table,hourly
+just curious footfall during the last 5 mins,last_window
+so number who walked out the other side for this session,people_out
+i want to know numbers grouped by each hour for this session,hourly
+good evening,greet
+quick question where is the crowd heading next right now,forecast
+can you tell me what time of day was heaviest please,busiest_hour
+how busy with people right now,people_total
+what's the big picture,summary
+quick question any unusual activity,anomalies
+i want to know how many walked in right now,people_in
+what was the peak crowd,peak
+show me the options overall,help
+i want to know how many headed away for this session,people_out
+biggest crowd recorded exactly,peak
+how many headed away right now,people_out
+please how many went outward,people_out
+tell me what happened overall,summary
+confidence score right now,confidence
+can you tell me how many walked out for this session,people_out
+how do i use this overall,help
+tell me hourly footfall?,hourly
+how many people went out right now,people_out
+just curious peak density for this session,peak
+could you tell me how many crossed in the past hour right now,last_window
+just curious peak number of people for this session,peak
+what's the forecast overall,forecast
+just curious what is the accuracy?,confidence
+just curious list what you can report,help
+people out in the last 20 minutes in this footage,last_window
+just curious in the previous twenty minutes how many walked through,last_window
+quick question total people both directions,people_total
+quick question maximum crowd for this session,peak
+how many in the past 15 minutes,last_window
+hey show me the options,help
+tell me full report,summary
+total entering the area,people_in
+quick question tally of people who left,people_out
+just curious were there any surges?,anomalies
+tell me hey there overall,greet
+could you tell me how many came inward,people_in
+please which hour was busiest right now,busiest_hour
+how sure is the detector,confidence
+hiya,greet
+total number of people,people_total
+so trend of the crowd,forecast
+just curious good morning?,greet
+number of pedestrians leaving exactly,people_out
+"hey, you there? for this session",greet
+show me each hour right now,hourly
+what's the forecast for this session,forecast
+anything out of the ordinary,anomalies
+hey good evening,greet
+could you tell me what time had the most exits for this session,busiest_hour
+what are my options,help
+quick question expected footfall ahead,forecast
+please greetings overall,greet
+quick question were there anomalies exactly,anomalies
+hey mean confidence please,confidence
+quick question what can you tell me,help
+tell me did the crowd do anything odd,anomalies
+what was the busiest moment in time right now,busiest_hour
+highest number of people in view,peak
+what comes next overall,forecast
+peak density please,peak
+quick question how many crossed in the past hour please,last_window
+what's the max crowd,peak
+tell me which period had the most people right now,busiest_hour
+quick question how many came inward in this footage,people_in
+could you tell me how many in the last 10 minutes in this footage,last_window
+hey how many entered exactly,people_in
+just curious good evening please,greet
+what's up overall,greet
+how many walked out,people_out
+can you tell me anything out of the ordinary for this session,anomalies
+what are my options overall,help
+tell me how many crossed in the past hour exactly,last_window
+please last 5 minutes count please,last_window
+so what's the max crowd right now,peak
+i want to know split the counts by hour,hourly
+detection accuracy,confidence
+just curious morning,greet
+hey how reliable are the detections,confidence
+what time had the most exits,busiest_hour
+just curious what was the crowd maximum,peak
+i want to know footfall by hour,hourly
+how many entered in the last 45 minutes please,last_window
+i want to know what happened overall right now,summary
+tell me hi bot,greet
+can you tell me numbers grouped by each hour,hourly
+please numbers grouped by each hour?,hourly
+hey hey there in this footage,greet
+how many folks arrived exactly,people_in
+what are the kpis,summary
+so footfall total in this footage,people_total
+please is it getting busier or quieter,forecast
+most people at once,peak
+quick question how did each hour compare for this session,hourly
+so project the crowd going forward overall,forecast
+just curious in the previous twenty minutes how many walked through in this footage,last_window
+quick question how many people came in right now,people_in
+so how many walked in right now,people_in
+how many folks arrived overall,people_in
+please hey buddy,greet
+so which slot saw the most movement in this footage,busiest_hour
+so people per hour please,hourly
+outbound people count,people_out
+give me some example questions,help
+hey which minute had most people out for this session,busiest_hour
+i want to know busiest moment,peak
+so hourly footfall,hourly
+quick question overview please in this footage,summary
+hey count over the last half hour,last_window
+what time had the most exits?,busiest_hour
+quick question entries count,people_in
+just curious hello?,greet
+hey when was it busiest?,busiest_hour
+hey there,greet
+tell me peak time of day exactly,busiest_hour
+just curious did the crowd do anything odd for this session,anomalies
+so project the crowd going forward exactly,forecast
+tell me sum of all pedestrian crossings?,people_total
+what's the max crowd please,peak
+so peak density right now,peak
+where is the crowd heading next,forecast
+hey how reliable are the detections overall,confidence
+how many headed away,people_out
+hey how busy in the last 2 hours?,last_window
+sum of all pedestrian crossings,people_total
+hey total pedestrians?,people_total
+hello overall,greet
+could you tell me what time of day was heaviest please,busiest_hour
+how many people went out,people_out
+hey how many headed away for this session,people_out
+how many crossed in the past hour,last_window
+quick question what's the max crowd right now,peak
+please how many folks arrived right now,people_in
+can you tell me summarise the session please,summary
+just curious confidence score,confidence
+help for this session,help
+so what happened in the final 15 minutes overall,last_window
+can you tell me future crowd estimate exactly,forecast
+i want to know headcount that exited in this footage,people_out
+quick question show me each hour,hourly
+hey how many walked out for this session,people_out
+which hour was busiest,busiest_hour
+please tally of people who left right now,people_out
+could you tell me how do i use this exactly,help
+i want to know hello,greet
+can you tell me highest number of people in view exactly,peak
+how many people exited,people_out
+hey recap the whole thing exactly,summary
+when were the most crossings,busiest_hour
+quick question per hour numbers,hourly
+i want to know people out for this session,people_out
+yo right now,greet
+hey top crowd size in this footage,peak
+so how many came through inbound please,people_in
+people out in the last 20 minutes,last_window
+tell me total pedestrians exactly,people_total
+how packed did it get at most,peak
+total people both directions,people_total
+give me a summary exactly,summary
+could you tell me when was it busiest?,busiest_hour
+footfall by hour,hourly
+hey when was the place most packed exactly,busiest_hour
+i want to know sum of all pedestrian crossings please,people_total
+how many headed away?,people_out
+quick question were there any surges,anomalies
+can you tell me entries count please,people_in
+can you tell me overall footfall in this footage,people_total
+tell me how many people overall please,people_total
+please show me each hour overall,hourly
+quick question how many entered?,people_in
+what are my options please,help
+tell me what questions can i ask?,help
+please key numbers please for this session,summary
+could you tell me what can you tell me right now,help
+i want to know what do you know for this session,help
+can you tell me inbound people count please,people_in
+how many folks departed,people_out
+grand total of crossings,people_total
+overall footfall exactly,people_total
+just curious count over the last half hour,last_window
+could you tell me what's the trend right now,forecast
+can you tell me crossings hour by hour,hourly
+i want to know people in in this footage,people_in
+can you tell me total people both directions exactly,people_total
+what was the crowd maximum for this session,peak
+please when was the crowd biggest,peak
+number who walked inward overall,people_in
+just curious hourly footfall right now,hourly
+give me a summary,summary
+hey number of pedestrians leaving right now,people_out
+quick question footfall total?,people_total
+list what you can report,help
+tell me how many made their way out,people_out
+could you tell me high level summary exactly,summary
+hey morning overall,greet
+just curious where is footfall heading exactly,forecast
+which period had the most people in this footage,busiest_hour
+tell me high level summary,summary
+mean confidence please,confidence
+i want to know session overview,summary
+quick question how many folks arrived,people_in
+please how do i use this right now,help
+were there sudden surges or drops exactly,anomalies
+just curious people out?,people_out
+tell me footfall by hour in this footage,hourly
+quick question sum it up for me?,summary
+i want to know hello in this footage,greet
+quick question combined in and out count please,people_total
+guide me?,help
+quick question split the counts by hour,hourly
+just curious number who walked inward for this session,people_in
+hey anomaly count for this session,anomalies
+could you tell me mean confidence exactly,confidence
+biggest crowd recorded,peak
+please which minute had most people out in this footage,busiest_hour
+i want to know summarise the session,summary
+how many left,people_out
+i want to know overview please,summary
+hey buddy please,greet
+could you tell me what's the forecast,forecast
+anything strange,anomalies
+could you tell me per hour numbers for this session,hourly
+were there sudden surges or drops,anomalies
+just curious how many people overall right now,people_total
+when was the place most packed exactly,busiest_hour
+did anything abnormal happen,anomalies
+hey most people at once,peak
+hey total people both directions in this footage,people_total
+i want to know how many anomalies?,anomalies
+busiest period please,busiest_hour
+tally of people who left right now,people_out
+how many went outward,people_out
+just curious how many in the past 15 minutes overall,last_window
+please what happened in the final 15 minutes for this session,last_window
+can you tell me highest number of people in view,peak
+please people per hour?,hourly
+can you tell me hello assistant?,greet
+so how many anomalies,anomalies
+how many entered,people_in
+so count over the last half hour,last_window
+quick question how many people in total please,people_total
+how good is the detection quality,confidence
+just curious what time of day was heaviest in this footage,busiest_hour
+just curious any spikes detected exactly,anomalies
+can you tell me what questions can i ask please,help
+tell me how many walked out please,people_out
+please grand total of crossings exactly,people_total
+hey how many walked in please,people_in
+most crowded it got please,peak
+what time was the peak exactly,busiest_hour
+any spikes detected exactly,anomalies
+"could you tell me hey, you there? exactly",greet
+tell me outbound people count,people_out
+tell me expected footfall ahead please,forecast
+grand total of crossings overall,people_total
+hey how many people went out for this session,people_out
+so overview please,summary
+general summary in this footage,summary
+how does this work?,help
+just curious what comes next exactly,forecast
+hey last 5 minutes count,last_window
+project the crowd going forward,forecast
+busiest moment?,peak
+tell me what can you answer,help
+tell me how did each hour compare right now,hourly
+were there abnormal crowd levels,anomalies
+tell me did anything unusual get flagged,anomalies
+hi bot,greet
+can you tell me confidence level of the model?,confidence
+i want to know footfall during the last 5 mins,last_window
+how busy with people,people_total
+hey hi for this session,greet
+just curious count of people in please,people_in
+tell me largest crowd size,peak
+could you tell me how many people in total overall,people_total
+is the crowd rising or falling,forecast
+i want to know what time had the most exits please,busiest_hour
+so what hour had most traffic?,busiest_hour
+could you tell me count of people in,people_in
+how many people went in,people_in
+full report,summary
+what happened overall in this footage,summary
+can you tell me what was the busiest moment in time,busiest_hour
+please where is footfall heading exactly,forecast
+top crowd size,peak
+can you tell me how many crossed in the past hour,last_window
+quick question detection accuracy exactly,confidence
+tell me project the crowd going forward in this footage,forecast
+i want to know footfall total exactly,people_total
+recently how many came through,last_window
+tell me entries count for this session,people_in
+confidence score,confidence
+i want to know give me a summary please,summary
+i want to know what happened in the final 15 minutes please,last_window
+can you tell me sum it up for me overall,summary
+tell me what are you capable of,help
+hey highest number of people in view,peak
+i want to know recap the whole thing overall,summary
+what's the overall report,summary
+tell me yo,greet
+hey how many people came in,people_in
+tell me what's the overall report exactly,summary
+what info do you have please,help
+how many folks arrived,people_in
+what are the kpis overall,summary
+list what you can report exactly,help
+how many people came in,people_in
+general summary,summary
+how many anomalies,anomalies
+quick question which period had the most people in this footage,busiest_hour
+just curious give me some example questions,help
+quick question howdy right now,greet
+tell me combined in and out count right now,people_total
+tell me overall footfall exactly,people_total
+hey number who walked out the other side?,people_out
+tell me how many people went in exactly,people_in
+tell me inbound people count right now,people_in
+quick question which hour was busiest right now,busiest_hour
+so what's the big picture for this session,summary
+how many in the past 15 minutes please,last_window
+what will the crowd do next,forecast
+so how many people crossed right now,people_total
+just curious which period had the most people exactly,busiest_hour
+could you tell me how trustworthy are these detections for this session,confidence
+so what's the detection confidence in this footage,confidence
+maximum crowd?,peak
+could you tell me crossings hour by hour,hourly
+tell me biggest crowd recorded,peak
+how do i use this,help
+how many each hour,hourly
+so project the crowd going forward in this footage,forecast
+last hour footfall,last_window
+quick question people in the last hour in this footage,last_window
+can you tell me how many folks departed?,people_out
+any spikes detected,anomalies
+so recap the whole thing,summary
+can you tell me greetings please,greet
+model confidence right now,confidence
+tell me give me a summary,summary
+i want to know exits count please,people_out
+how many people in total,people_total
+hey how busy in the last 2 hours right now,last_window
+how trustworthy are these detections,confidence
+count over the last half hour,last_window
+what hour had most traffic,busiest_hour
+what time of day was heaviest,busiest_hour
+just curious any spikes detected overall,anomalies
+brief me on this session right now,summary
+inbound people count,people_in
+please total pedestrians exactly,people_total
+tally of people who left overall,people_out
+howdy,greet
+can you tell me how many entered,people_in
+so how does this work overall,help
+so future crowd estimate overall,forecast
+so were there abnormal crowd levels please,anomalies
+hey greetings,greet
+just curious people in?,people_in
+give me the hourly breakdown,hourly
+number who walked inward,people_in
+just curious how many headed inside,people_in
+please hey buddy right now,greet
+just curious is it getting busier or quieter for this session,forecast
+what's the detection confidence,confidence
+could you tell me last hour footfall in this footage,last_window
+so how many in the last 10 minutes,last_window
+could you tell me highest number of people in view,peak
+total crossings of people please,people_total
+i want to know any spikes detected please,anomalies
+entries count,people_in
+hey overview please,summary
+hourly counts in this footage,hourly
+what's the average certainty for this session,confidence
+quick question average confidence in this footage,confidence
+please anomaly count,anomalies
+could you tell me how many made their way out overall,people_out
+peak time of day for this session,busiest_hour
+tell me what time was the peak,busiest_hour
+how many people crossed?,people_total
+how busy in the last 2 hours right now,last_window
+total number of people in this footage,people_total
+just curious how many people exited right now,people_out
+i want to know what time had the most exits in this footage,busiest_hour
+so when were the most crossings,busiest_hour
+quick question last 5 minutes count,last_window
+please number of pedestrians entering in this footage,people_in
+can you tell me give me a summary,summary
+what do you know exactly,help
+please how many walked in,people_in
+show the per-hour table?,hourly
+just curious help overall,help
+tell me per hour numbers,hourly
+quick question how many came through inbound overall,people_in
+hey confidence score overall,confidence
+what was the crowd maximum,peak
+please last hour footfall right now,last_window
+just curious largest crowd size exactly,peak
+quick question numbers grouped by each hour?,hourly
+so how many came inward in this footage,people_in
+i want to know hourly footfall,hourly
+quick question how many headed inside for this session,people_in
+hey recent crossings last 10 min,last_window
+key numbers please exactly,summary
+i want to know session overview for this session,summary
+can you tell me were there sudden surges or drops please,anomalies
+quick question give me the hourly breakdown exactly,hourly
+tell me crowd prediction right now,forecast
+what are you capable of right now,help
+how many people exited right now,people_out
+can you tell me maximum crowd,peak
+show me each hour,hourly
+just curious what's the forecast,forecast
+hey how sure is the detector?,confidence
+just curious recap the whole thing?,summary
+please forecast the next intervals please,forecast
+so key numbers please,summary
+tell me busiest period?,busiest_hour
+average confidence?,confidence
+quick question crowd prediction,forecast
+brief me on this session,summary
+tell me is it getting busier or quieter?,forecast
+"hey, you there?",greet
+did anything unusual get flagged overall,anomalies
+quick question were there sudden surges or drops right now,anomalies
+i want to know when did footfall peak?,busiest_hour
+hey buddy?,greet
+tell me what was the crowd maximum right now,peak
+what questions can i ask right now,help
+tell me when was the crowd biggest,peak
+future crowd estimate,forecast
+morning for this session,greet
+total pedestrians,people_total
+when was the place most packed,busiest_hour
+quick question how many entered in the last 45 minutes?,last_window
+quick question how do i use this please,help
+so how did each hour compare please,hourly
+how does this work,help
+can you tell me how many people went out exactly,people_out
+could you tell me any weird spikes in the crowd please,anomalies
+i want to know how did each hour compare,hourly
+hey good morning in this footage,greet
+which hour was busiest right now,busiest_hour
+can you tell me give me some example questions,help
+hey there please,greet
+please how many anomalies,anomalies
+when were the most crossings for this session,busiest_hour
+just curious highest number of people in view exactly,peak
+i want to know howdy in this footage,greet
+quick question maximum crowd overall,peak
+when was it busiest overall,busiest_hour
+tell me everything?,summary
+hourly footfall,hourly
+so where is footfall heading,forecast
+i want to know confidence score,confidence
+how many walked in,people_in
+count of people out right now,people_out
+quick question what do you know right now,help
+could you tell me people out in the last 20 minutes exactly,last_window
+please how busy in the last 2 hours please,last_window
+i want to know number of pedestrians entering,people_in
+please how confident is the model,confidence
+tell me hello assistant,greet
+could you tell me what's the big picture,summary
+overall footfall right now,people_total
+so what do you know please,help
+tell me hello assistant for this session,greet
+so what's the trend overall,forecast
+so what are my options right now,help
+how did each hour compare,hourly
+i want to know hourly counts overall,hourly
+so how packed did it get at most,peak
+please expected footfall ahead overall,forecast
+please anything strange exactly,anomalies
+tally of people who left please,people_out
+could you tell me detection accuracy in this footage,confidence
+total crossings of people,people_total
+grand total of crossings exactly,people_total
+so how accurate is it right now,confidence
+quick question hiya overall,greet
+could you tell me how many crossed altogether,people_total
+when was the place most packed right now,busiest_hour
+just curious when did footfall peak exactly,busiest_hour
+how many each hour in this footage,hourly
+can you tell me how many headed inside right now,people_in
+any unusual activity in this footage,anomalies
+could you tell me hi bot?,greet
+can you tell me what can you do,help
+i want to know count of people in overall,people_in
+can you tell me footfall by hour?,hourly
+just curious unusual moments,anomalies
+any weird spikes in the crowd exactly,anomalies
+please busiest hour right now,busiest_hour
+tally of people who left,people_out
+trend of the crowd for this session,forecast
+i want to know what are the kpis for this session,summary
+just curious how many came inward,people_in
+just curious anything strange,anomalies
+people per hour,hourly
+show me the options for this session,help
+how trustworthy are these detections exactly,confidence
+please confidence level of the model for this session,confidence
+what are you capable of,help
+i want to know recently how many came through please,last_window
+tell me when were the most crossings,busiest_hour
+just curious footfall by hour,hourly
+hey what is the accuracy right now,confidence
+crossings hour by hour,hourly
+hey how trustworthy are these detections,confidence
+yo,greet
+quick question help?,help
+how many headed inside,people_in
+tell me were there any surges please,anomalies
+hey crossings hour by hour overall,hourly
+quick question total pedestrians,people_total
+general summary please,summary
+quick question hey there for this session,greet
+sum of all pedestrian crossings overall,people_total
+what will the crowd do next exactly,forecast
+did the crowd do anything odd?,anomalies
+hey hiya for this session,greet
+when was it busiest,busiest_hour
+which minute had most people out,busiest_hour
+so how many folks departed,people_out
+hey total entering the area,people_in
+just curious sum of all pedestrian crossings,people_total
+numbers grouped by each hour,hourly
+i want to know peak time of day,busiest_hour
+hey forecast the next intervals in this footage,forecast
+so how did each hour compare,hourly
+hey confidence level of the model please,confidence
+please how packed did it get at most right now,peak
+recently how many came through right now,last_window
+could you tell me model confidence,confidence
+quick question top crowd size overall,peak
+just curious what was the busiest moment in time,busiest_hour
+could you tell me when did footfall peak please,busiest_hour
+so how many people crossed,people_total
+please did anything abnormal happen,anomalies
+tell me forecast the next intervals overall,forecast
+hey number who walked out the other side,people_out
+could you tell me good morning exactly,greet
+greetings,greet
+could you tell me people out in the last 20 minutes please,last_window
+please what comes next right now,forecast
+so how reliable are the detections for this session,confidence
+please when was it busiest overall,busiest_hour
+just curious people out in the last 20 minutes in this footage,last_window
+tell me how many humans crossed the line,people_total
+just curious headcount that exited right now,people_out
+could you tell me what are you capable of,help
+could you tell me footfall during the last 5 mins in this footage,last_window
+what do you know,help
+so recently how many came through please,last_window
+could you tell me what is the accuracy right now,confidence
+hey what info do you have in this footage,help
+so where is the crowd heading next,forecast
+how good is the detection quality right now,confidence
+peak number of people,peak
+just curious average confidence overall,confidence
+how many people overall,people_total
+i want to know most crowded it got in this footage,peak
+so total crossings of people in this footage,people_total
+could you tell me mean confidence right now,confidence
+so how accurate is it for this session,confidence
+hey busiest period for this session,busiest_hour
+please how many walked out exactly,people_out
+quick question give me some example questions in this footage,help
+hey top crowd size,peak
+so crossings in the last 30 minutes overall,last_window
+hey when was the crowd biggest,peak
+can you tell me how many left,people_out
+can you tell me crossings in the last 30 minutes,last_window
+people in,people_in
+i want to know model confidence overall,confidence
+please numbers grouped by each hour exactly,hourly
+how many people in total?,people_total
+what was the rush hour,busiest_hour
+tell me recently how many came through please,last_window
+show me the options,help
+did anything abnormal happen for this session,anomalies
+please counts for every hour right now,hourly
+so any spikes detected,anomalies
+could you tell me how good is the detection quality overall,confidence
+how many in the last 10 minutes right now,last_window
+please how many people overall please,people_total
+how sure is the detector please,confidence
+i want to know future crowd estimate in this footage,forecast
+can you tell me hiya?,greet
+what's the detection confidence for this session,confidence
+just curious trend of the crowd please,forecast
+please full report overall,summary
+what happened in the final 15 minutes,last_window
+so busiest period please,busiest_hour
+hey number who walked inward,people_in
+hourly counts,hourly
+how many crossed altogether for this session,people_total
+can you tell me sum it up for me,summary
+can you tell me hello assistant overall,greet
+so unusual moments,anomalies
+breakdown by hour,hourly
+key numbers please,summary
+which slot saw the most movement,busiest_hour
+counts for every hour for this session,hourly
+i want to know sum of all pedestrian crossings?,people_total
+tell me crossings hour by hour?,hourly
+tell me how many in the past 15 minutes,last_window
+quick question per hour numbers exactly,hourly
+please list what you can report please,help
+so overall footfall please,people_total
+could you tell me crowd prediction,forecast
+could you tell me people per hour right now,hourly
+so recent crossings last 10 min for this session,last_window
+when was it busiest for this session,busiest_hour
+what was the rush hour in this footage,busiest_hour
+hey how good is the detection quality in this footage,confidence
+could you tell me how many came through inbound?,people_in
+last hour footfall overall,last_window
+top crowd size in this footage,peak
+so what was the rush hour exactly,busiest_hour
+confidence level of the model,confidence
+could you tell me what was the peak crowd in this footage,peak
+were there sudden surges or drops?,anomalies
+could you tell me what's the trend?,forecast
+just curious how trustworthy are these detections,confidence
+peak density,peak
+just curious greetings please,greet
+headcount that exited right now,people_out
+just curious give me a summary?,summary
+i want to know tell me everything,summary
+hey which hour was busiest for this session,busiest_hour
+how many people crossed,people_total
+so did anything abnormal happen in this footage,anomalies
+people in the last hour overall,last_window
+headcount that exited,people_out
+combined in and out count in this footage,people_total
+so most people at once for this session,peak
+please give me some example questions,help
+please peak number of people,peak
+i want to know where is the crowd heading next right now,forecast
+hey how many left please,people_out
+"hey hey, you there?",greet
+i want to know count of people out,people_out
+hey how good is the detection quality,confidence
+tell me howdy in this footage,greet
+hey what can you answer,help
+how many in the last 10 minutes overall,last_window
+per hour numbers,hourly
+i want to know what was the rush hour overall,busiest_hour
+hey entries count right now,people_in
+quick question tell me everything right now,summary
+what can you do,help
+crossings in the last 30 minutes in this footage,last_window
+which period had the most people,busiest_hour
+most crowded it got,peak
+hey list what you can report in this footage,help
+quick question breakdown by hour in this footage,hourly
+quick question how many crossed altogether,people_total
+could you tell me split the counts by hour,hourly
+outbound people count overall,people_out
+could you tell me inbound people count overall,people_in
+can you tell me detection accuracy,confidence
+recap the whole thing,summary
+so how does this work,help
+did anything unusual get flagged,anomalies
+hey total people both directions please,people_total
+could you tell me how many people came in exactly,people_in
+sum it up for me exactly,summary
+overall footfall,people_total
+can you tell me brief me on this session?,summary
+just curious total number of people,people_total
+hey anything strange,anomalies
+could you tell me most people at once,peak
+please number who walked out the other side please,people_out
+can you tell me what time had the most exits?,busiest_hour
+hello,greet
+i want to know last hour footfall?,last_window
+i want to know total number of people please,people_total
+quick question is the crowd rising or falling for this session,forecast
+tell me how many made their way out exactly,people_out
+busiest moment,peak
+can you tell me grand total of crossings,people_total
+quick question number of pedestrians leaving right now,people_out
+what's the big picture overall,summary
+what comes next,forecast
+i want to know forecast the next intervals,forecast
+model confidence,confidence
+expected footfall ahead,forecast
+just curious how packed did it get at most,peak
+how many left in this footage,people_out
+busiest hour,busiest_hour
+hey when was the place most packed,busiest_hour
+what's up?,greet
+could you tell me exits count overall,people_out
+quick question how many people came in for this session,people_in
+could you tell me how many people crossed,people_total
+just curious guide me please,help
+count of people out,people_out
+could you tell me which minute had most people out,busiest_hour
+just curious model confidence overall,confidence
+quick question summarise the session for this session,summary
+please combined in and out count exactly,people_total
+could you tell me total number of people for this session,people_total
+any weird spikes in the crowd,anomalies
+can you tell me busiest hour exactly,busiest_hour
+could you tell me what can you answer please,help
+please trend of the crowd for this session,forecast
+so anything out of the ordinary exactly,anomalies
+please last 5 minutes count right now,last_window
+please what questions can i ask exactly,help
+could you tell me busiest period,busiest_hour
+what can you answer in this footage,help
+what time was the peak,busiest_hour
+so busiest hour?,busiest_hour
+i want to know total pedestrians,people_total
+so session overview in this footage,summary
+tell me number who walked inward exactly,people_in
+counts for every hour,hourly
+so which slot saw the most movement,busiest_hour
+what happened overall,summary
+i want to know how many folks departed,people_out
+can you tell me what are my options for this session,help
+can you tell me show the per-hour table for this session,hourly
+please maximum crowd in this footage,peak
+can you tell me give me the hourly breakdown right now,hourly
+what info do you have,help
+last 5 minutes count,last_window
+i want to know yo,greet
+hey number of pedestrians entering for this session,people_in
+can you tell me is the crowd rising or falling right now,forecast
+how many entered in the last 45 minutes,last_window
+what questions can i ask,help
+just curious how many people came in right now,people_in
+what can you tell me,help
+can you tell me what was the rush hour overall,busiest_hour
+people per hour overall,hourly
+quick question what are my options,help
+please hourly footfall please,hourly
+could you tell me how busy with people,people_total
+people in the last hour in this footage,last_window
+just curious how many left?,people_out
+tell me what was the crowd maximum in this footage,peak
+hey people out,people_out
+people out in the last 20 minutes please,last_window
+so how many people exited,people_out
+how reliable are the detections overall,confidence
+hello assistant,greet
+could you tell me how many people went in,people_in
+where is footfall heading,forecast
+crossings hour by hour?,hourly
+could you tell me hi bot please,greet
+quick question most people at once overall,peak
+how many folks departed?,people_out
+can you tell me how reliable are the detections in this footage,confidence
+quick question total crossings of people,people_total
+hi,greet
+could you tell me peak number of people,peak
+please total people both directions exactly,people_total
+so expected footfall ahead please,forecast
+please how confident is the model overall,confidence
+what's the trend,forecast
+could you tell me brief me on this session please,summary
+please what's the detection confidence in this footage,confidence
+quick question predict the crowd for this session,forecast
+summarise the session,summary
+just curious what hour had most traffic right now,busiest_hour
+morning,greet
+hey how many people crossed for this session,people_total
+just curious were there anomalies?,anomalies
+please give me the hourly breakdown overall,hourly
+did the crowd do anything odd,anomalies
+i want to know what was the rush hour for this session,busiest_hour
+so hi right now,greet
+any unusual activity,anomalies
+session overview,summary
+combined in and out count,people_total
+please count over the last half hour,last_window
+just curious what's up,greet
+session overview overall,summary
+anything out of the ordinary right now,anomalies
+is the crowd rising or falling right now,forecast
+quick question hourly counts exactly,hourly
+can you tell me hourly counts for this session,hourly
+so biggest crowd recorded please,peak
+just curious what do you know in this footage,help
+quick question guide me for this session,help
+so hi please,greet
+quick question what hour had most traffic,busiest_hour
+please how many folks departed in this footage,people_out
+could you tell me hello,greet
+could you tell me hi bot for this session,greet
+crowd prediction right now,forecast
+high level summary,summary
+just curious yo exactly,greet
+quick question in the previous twenty minutes how many walked through for this session,last_window
+quick question outbound people count,people_out
+so brief me on this session in this footage,summary
+please how many went outward for this session,people_out
+tell me split the counts by hour,hourly
+number who walked out the other side,people_out
+hey which period had the most people please,busiest_hour
+tell me everything,summary
+quick question when was the crowd biggest in this footage,peak
+quick question what's up in this footage,greet
+can you tell me what can you tell me,help
+were there any surges,anomalies
+just curious how busy with people in this footage,people_total
+i want to know peak density please,peak
+tell me per hour numbers exactly,hourly
+please future crowd estimate in this footage,forecast
+what's the overall report overall,summary
+could you tell me hi exactly,greet
+i want to know how many each hour,hourly
+so how many humans crossed the line right now,people_total
+i want to know where is the crowd heading next in this footage,forecast
+just curious give me the hourly breakdown,hourly
+could you tell me how accurate is it please,confidence
+largest crowd size,peak
+hey how many people overall,people_total
+predict the crowd,forecast
+what's the trend for this session,forecast
+just curious busiest moment?,peak
+could you tell me most people at once right now,peak
+tell me what are the kpis,summary
+mean confidence?,confidence
+tell me what's the detection confidence,confidence
+people in the last hour,last_window
+exits count,people_out
+quick question how many crossed altogether right now,people_total
+quick question how many in the past 15 minutes exactly,last_window
+hey total entering the area right now,people_in
+please were there abnormal crowd levels for this session,anomalies
+so sum it up for me please,summary
+when did footfall peak,busiest_hour
+trend of the crowd,forecast
+please what happened overall please,summary
+so how sure is the detector overall,confidence
+please largest crowd size overall,peak
+so how sure is the detector in this footage,confidence
+busiest period,busiest_hour
+were there any surges for this session,anomalies
+i want to know how many entered in the last 45 minutes overall,last_window
+footfall during the last 5 mins,last_window
+could you tell me footfall total,people_total
+future crowd estimate please,forecast
+how accurate is it,confidence
+hey recent crossings last 10 min right now,last_window
+largest crowd size overall,peak
+sum it up for me,summary
+could you tell me how many entered overall,people_in
+maximum crowd,peak
+what was the busiest moment in time,busiest_hour
+tell me how many entered in the last 45 minutes please,last_window
+could you tell me trend of the crowd,forecast
+quick question how many headed away in this footage,people_out
+which slot saw the most movement please,busiest_hour
+quick question how many humans crossed the line,people_total
+just curious people in please,people_in
+can you tell me what was the peak crowd right now,peak
+please what happened in the final 15 minutes exactly,last_window
+i want to know how busy with people please,people_total
+were there anomalies?,anomalies
+could you tell me show me each hour for this session,hourly
+so what are you capable of?,help
+please what's the overall report overall,summary
+crossings in the last 30 minutes,last_window
+quick question how confident is the model exactly,confidence
+i want to know recent crossings last 10 min,last_window
+tell me expected footfall ahead for this session,forecast
+good morning for this session,greet

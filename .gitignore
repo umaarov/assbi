@@ -25,6 +25,9 @@ data/*.mp4
 # partial / incomplete downloads
 data/*.part
 *.pt
+# Generated training artifacts (large: sampled images + run weights/plots)
+data/dataset/
+runs/
 
 # Secrets (never commit real keys)
 .env

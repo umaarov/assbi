@@ -131,7 +131,28 @@ def build_assistant(config: AppConfig, repository, session_id: str):
                 temperature=cc.temperature,
                 env_var=cc.api_key_env,
             )
-    return SurveillanceAssistant(repository, session_id, llm=llm)
+
+    # Attach the trained intent classifier if one has been trained. Prefer the
+    # transfer-learning (MiniLM) model; fall back to the lightweight bag-of-words
+    # one; else None (regex/LLM only, e.g. on the dependency-light cloud app).
+    intent_classifier = None
+    try:
+        from ..chatbot.intent_nlu import NLUClassifier
+
+        intent_classifier = NLUClassifier.load_if_available()
+    except Exception:
+        intent_classifier = None
+    if intent_classifier is None:
+        try:
+            from ..chatbot.intent_model import IntentClassifier
+
+            intent_classifier = IntentClassifier.load_if_available()
+        except Exception:
+            intent_classifier = None
+
+    return SurveillanceAssistant(
+        repository, session_id, llm=llm, intent_classifier=intent_classifier,
+    )
 
 
 def build_pipeline(config: AppConfig, repository: SQLiteAnalyticsRepository | None = None) -> SurveillancePipeline:

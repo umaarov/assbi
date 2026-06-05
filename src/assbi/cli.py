@@ -61,6 +61,14 @@ def cmd_run(args: argparse.Namespace) -> int:
     if getattr(args, "stride", None):
         config.video.stride = args.stride
 
+    start_time = None
+    if getattr(args, "start_time", None):
+        from datetime import datetime, timezone
+
+        start_time = datetime.fromisoformat(args.start_time)
+        if start_time.tzinfo is None:
+            start_time = start_time.replace(tzinfo=timezone.utc)
+
     # --stream: pull the assignment video live (no download). Implies YOLO,
     # since the synthetic backend ignores real frames.
     source_arg = args.source
@@ -86,7 +94,8 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     print(f"▶ Running session '{session_id}' over '{label}' …")
     with source:
-        result = pipeline.run(source, session_id, str(label), render_path=render_path)
+        result = pipeline.run(source, session_id, str(label), render_path=render_path,
+                              start_time=start_time)
 
     s = result.summary
     print("\n✓ Analysis complete")
@@ -233,6 +242,97 @@ def cmd_record(args: argparse.Namespace) -> int:
     return rc
 
 
+def cmd_build_dataset(args: argparse.Namespace) -> int:
+    """Sample frames from footage and auto-label them into a YOLO dataset."""
+    from .training import build_dataset
+
+    try:
+        stats = build_dataset(
+            source=args.source,
+            out_dir=args.out,
+            n_frames=args.frames,
+            val_split=args.val_split,
+            label_model=args.label_model,
+            conf=args.conf,
+            imgsz=args.imgsz,
+        )
+    except (FileNotFoundError, RuntimeError) as exc:
+        print(f"✗ {exc}")
+        return 1
+    print(f"\nReview/correct labels if needed, then train:\n"
+          f"  python -m assbi.cli train --data {stats.data_yaml}")
+    return 0
+
+
+def cmd_train(args: argparse.Namespace) -> int:
+    """Fine-tune YOLO on the built dataset."""
+    from .training import train_model
+
+    try:
+        result = train_model(
+            data_yaml=args.data,
+            base=args.base,
+            epochs=args.epochs,
+            imgsz=args.imgsz,
+            batch=args.batch,
+            name=args.name,
+            device=args.device,
+        )
+    except (FileNotFoundError, RuntimeError) as exc:
+        print(f"✗ {exc}")
+        return 1
+    print("\n✓ Training complete")
+    print(f"  Best weights : {result.best_weights}")
+    print(f"  Run dir      : {result.run_dir}  (curves, confusion matrix, results.csv)")
+    if result.metrics:
+        for k, v in result.metrics.items():
+            print(f"  {k:14}: {v}")
+    print("\nTo use your model, set in config.yaml:")
+    print(f"  detection.model_path: {result.best_weights.as_posix()}")
+    return 0
+
+
+def cmd_train_chatbot(args: argparse.Namespace) -> int:
+    """Train the intent classifier for the chatbot's NLU."""
+    if args.backend == "bow":
+        from .chatbot.intent_model import train
+
+        print("Training NLU (bag-of-words → MLP) …")
+        try:
+            r = train(epochs=args.epochs, hidden=args.hidden, lr=args.lr)
+        except RuntimeError as exc:
+            print(f"✗ {exc}")
+            return 1
+        print("\n✓ Chatbot NLU trained (bag-of-words)")
+        print(f"  Test accuracy : {r.accuracy:.1%}")
+        print(f"  Macro F1      : {r.macro_f1:.3f}")
+        print(f"  Train / test  : {r.n_train} / {r.n_test} · {r.n_intents} intents")
+        print(f"  Model         : {r.model_path}")
+    else:
+        from .chatbot.intent_nlu import train
+
+        print("Training NLU via transfer learning (MiniLM embeddings → neural head) …")
+        try:
+            r = train(epochs=args.epochs, hidden=args.hidden, lr=args.lr)
+        except Exception as exc:
+            print(f"✗ {exc}\n  (Needs sentence-transformers: pip install sentence-transformers, "
+                  "or use --backend bow.)")
+            return 1
+        print("\n✓ Chatbot NLU trained (transfer learning)")
+        print(f"  Test accuracy        : {r.test_accuracy:.1%}")
+        print(f"  Macro F1             : {r.macro_f1:.3f}")
+        print(f"  5-fold CV accuracy   : {r.cv_mean:.1%} ± {r.cv_std:.1%}")
+        print(f"  Hard novel-paraphrase: {r.hard_accuracy:.1%}  (unseen wordings)")
+        print(f"  Train / test         : {r.n_train} / {r.n_test} · {r.n_intents} intents")
+        print(f"  Head weights         : {r.head_path}")
+        print(f"  Dataset              : {r.dataset_path}")
+        print(f"  Metrics              : {r.metrics_path}")
+        if r.confusion_path:
+            print(f"  Confusion plot       : {r.confusion_path}")
+    print("\nThe assistant auto-loads it on next run (cli chat / dashboard).")
+    return 0
+
+
 def _explain_source_error(exc: Exception) -> int:
     """Turn common (and cryptic) YouTube errors into actionable guidance."""
     msg = str(exc)
@@ -351,6 +451,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--frames", type=int, help="Limit number of frames")
     run.add_argument("--stride", type=int,
                      help="Process every Nth frame (higher = cover more footage faster; e.g. 10 for a long capture)")
+    run.add_argument("--start-time", metavar="ISO",
+                     help="Anchor footage timestamps, e.g. 2026-06-04T08:00 (default: now). "
+                          "Frames are stamped start-time + frame_index/fps, so the warehouse "
+                          "carries the video's real timeline for hourly/time queries.")
     run.add_argument("--render", action="store_true", help="Write an annotated output video")
     run.add_argument("--privacy", choices=["off", "blur", "pixelate"],
                      help="Anonymise detected people in the rendered video (GDPR)")
@@ -388,6 +492,38 @@ def build_parser() -> argparse.ArgumentParser:
 
     ds = sub.add_parser("dataset", help="Show a summary of the analytics dataset (warehouse)")
     ds.set_defaults(func=cmd_dataset)
+
+    bd = sub.add_parser("build-dataset",
+                        help="Sample frames from footage and auto-label them into a YOLO training dataset")
+    bd.add_argument("--source", default="data/source_video.mp4", help="Video file to sample")
+    bd.add_argument("--frames", type=int, default=500, help="Number of labelled frames to keep")
+    bd.add_argument("--out", default="data/dataset", help="Dataset output directory")
+    bd.add_argument("--val-split", type=float, default=0.2, help="Validation fraction (default 0.2)")
+    bd.add_argument("--label-model", default="yolov8s.pt",
+                    help="Pretrained 'teacher' weights for auto-labelling (default yolov8s.pt)")
+    bd.add_argument("--conf", type=float, default=0.30, help="Min confidence to keep a label")
+    bd.add_argument("--imgsz", type=int, default=640, help="Teacher inference size (default 640)")
+    bd.set_defaults(func=cmd_build_dataset)
+
+    tc = sub.add_parser("train-chatbot",
+                        help="Train the neural intent classifier for the chatbot's NLU")
+    tc.add_argument("--backend", choices=["transfer", "bow"], default="transfer",
+                    help="transfer = MiniLM embeddings + neural head (default, best); "
+                         "bow = lightweight bag-of-words (no extra deps)")
+    tc.add_argument("--epochs", type=int, default=300, help="Training epochs (default 300)")
+    tc.add_argument("--hidden", type=int, default=128, help="Hidden layer size (default 128)")
+    tc.add_argument("--lr", type=float, default=0.01, help="Learning rate (default 0.01)")
+    tc.set_defaults(func=cmd_train_chatbot)
+
+    tr = sub.add_parser("train", help="Fine-tune YOLO on the built dataset")
+    tr.add_argument("--data", default="data/dataset/data.yaml", help="Path to data.yaml")
+    tr.add_argument("--base", default="yolov8n.pt", help="Base weights to fine-tune (default yolov8n.pt)")
+    tr.add_argument("--epochs", type=int, default=30, help="Training epochs (default 30)")
+    tr.add_argument("--imgsz", type=int, default=416, help="Training image size (default 416)")
+    tr.add_argument("--batch", type=int, default=8, help="Batch size (default 8)")
+    tr.add_argument("--name", default="finetune", help="Run name under runs/assbi/")
+    tr.add_argument("--device", default=None, help="cpu (default) or GPU index like 0")
+    tr.set_defaults(func=cmd_train)
 
     pbi = sub.add_parser("powerbi", help="Export a Power BI star-schema pack (CSV/Excel + guide)")
     pbi.add_argument("--out", help="Output directory (default: data/output/powerbi)")

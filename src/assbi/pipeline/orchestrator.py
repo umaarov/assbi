@@ -15,7 +15,8 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
 from ..analytics.anomaly import RollingAnomalyDetector
@@ -89,6 +90,7 @@ class SurveillancePipeline:
         render_path: str | None = None,
         progress_every: int = 50,
         on_frame: Callable[[LiveUpdate], Any] | None = None,
+        start_time: datetime | None = None,
     ) -> PipelineResult:
         """Run the analysis loop for one session.
 
@@ -96,8 +98,19 @@ class SurveillancePipeline:
         :class:`LiveUpdate` (including the annotated image) so a live UI can
         render the stream in real time. If the callback returns ``False`` the
         run stops early (e.g. the user pressed Stop).
+
+        ``start_time`` anchors footage-relative timestamps: every frame and
+        crossing is stamped ``start_time + frame_index / fps`` so the warehouse
+        carries the *video's* timeline (not wall-clock processing time). This is
+        what lets the dashboard and chatbot answer "which hour was busiest?" or
+        "how many crossed in the last 30 minutes?" on a batch-processed file.
+        Defaults to now, so a 12-hour clip yields a 12-hour span of timestamps.
         """
         self.repository.start_session(session_id, source_label)
+        # fps is needed up-front to map frame indices to footage time.
+        fps = source.fps or 25.0
+        base_ts = start_time or datetime.now(timezone.utc)
+        last_index = 0
         annotator = FrameAnnotator(
             self.lines,
             privacy_mode=self.privacy_mode,
@@ -117,11 +130,15 @@ class SurveillancePipeline:
         started = time.perf_counter()
 
         for frame in source.frames():
+            # Footage-relative timestamp for this frame (see ``start_time`` doc).
+            frame_ts = base_ts + timedelta(seconds=frame.index / fps)
+            last_index = frame.index
             detections = self.detector.detect(frame)
             tracks = self.tracker.update(detections, frame.index)
             events = self.line_counter.process(tracks, frame.index)
             for event in events:
-                self.repository.save_crossing(session_id, event)
+                # Re-stamp with footage time (the counter uses wall-clock).
+                self.repository.save_crossing(session_id, replace(event, timestamp=frame_ts))
 
             snapshot = self.crowd.snapshot(tracks)
             anomaly = self.anomaly.update(float(snapshot.person_count))
@@ -140,7 +157,7 @@ class SurveillancePipeline:
                 session_id,
                 FrameAnalytics(
                     frame_index=frame.index,
-                    timestamp=_utcnow(),
+                    timestamp=frame_ts,
                     person_count=snapshot.person_count,
                     vehicle_count=snapshot.vehicle_count,
                     total_detections=len(detections),
@@ -182,12 +199,14 @@ class SurveillancePipeline:
             writer.release()
 
         elapsed = time.perf_counter() - started
-        fps = source.fps or 25.0
+        # True footage span = position of the last frame read / fps. Using the
+        # last index (not the emitted count) keeps duration correct under
+        # striding, where we only process every Nth frame of a long video.
         summary = SessionSummary(
             session_id=session_id,
             source=source_label,
             frames_processed=frames_processed,
-            duration_seconds=round(frames_processed / fps, 2),
+            duration_seconds=round((last_index + 1) / fps, 2),
             people_in=self.line_counter.people_in,
             people_out=self.line_counter.people_out,
             vehicles_in=self.line_counter.vehicles_in,
@@ -215,9 +234,3 @@ class SurveillancePipeline:
             CountingLine(Point(*lc.start), Point(*lc.end), lc.name)
             for lc in line_configs
         ]
-
-
-def _utcnow():
-    from datetime import datetime, timezone
-
-    return datetime.now(timezone.utc)

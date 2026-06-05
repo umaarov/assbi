@@ -31,20 +31,48 @@ class LLMBackend(Protocol):  # pragma: no cover - integration seam
 class SurveillanceAssistant:
     """Answers questions about a session from the warehouse."""
 
+    # Maps a predicted intent label to the handler that answers it. ``greet`` is
+    # intentionally absent so greetings fall through to the LLM for a natural
+    # reply rather than a canned one.
+    _HANDLERS = {
+        "help": "_help", "summary": "_summary",
+        "people_in": "_people_in", "people_out": "_people_out",
+        "people_total": "_people_total", "busiest_hour": "_busiest_hour",
+        "hourly": "_hourly", "last_window": "_last_window", "peak": "_peak",
+        "anomalies": "_anomalies", "forecast": "_forecast", "confidence": "_confidence",
+    }
+
     def __init__(
         self,
         repository: AnalyticsRepository,
         session_id: str,
         llm: LLMBackend | None = None,
+        intent_classifier=None,
+        intent_threshold: float = 0.55,
     ) -> None:
         self.repo = repository
         self.session_id = session_id
         self.reports = ReportBuilder(repository)
         self.llm = llm
+        # Trained neural intent classifier (NLU). When present and confident, it
+        # routes the question to a grounded handler — this is the *trained* part.
+        self.intent_classifier = intent_classifier
+        self.intent_threshold = intent_threshold
 
     def ask(self, question: str, history: list | None = None) -> Answer:
-        # When a real LLM is configured, let it drive the conversation — but
-        # grounded in this session's analytics so the numbers stay correct.
+        # 1) Trained intent classifier first: if it confidently recognises a data
+        #    question, answer deterministically from the warehouse (exact numbers).
+        if self.intent_classifier is not None:
+            intent, conf = self.intent_classifier.predict(question)
+            handler = self._HANDLERS.get(intent)
+            if handler is not None and conf >= self.intent_threshold:
+                ans = getattr(self, handler)(question.lower())
+                ans.data = {**(ans.data or {}),
+                            "intent": intent, "intent_confidence": round(conf, 3),
+                            "router": "trained-nn"}
+                return ans
+        # 2) Otherwise, when a real LLM is configured, let it drive the
+        #    conversation — grounded in this session's analytics.
         if self.llm is not None:
             try:
                 return self._llm_answer(question, history)
@@ -62,13 +90,17 @@ class SurveillanceAssistant:
         return self._fallback(question)
 
     def _llm_answer(self, question: str, history: list | None) -> Answer:
-        context = self.reports.markdown_report(self.session_id)
+        context = self.reports.chatbot_context(self.session_id)
         system = (
             "You are ASSBI, an AI assistant for a smart-surveillance business-"
             "intelligence platform. You are friendly and concise. Answer the "
             "user's question USING ONLY the analytics report below — never invent "
-            "numbers. If they greet you, greet back and say what you can report "
-            "on. If the answer isn't in the report, say so briefly.\n\n"
+            "numbers. The report includes a per-hour footfall table and a time "
+            "breakdown: use them to answer time-based questions such as which hour "
+            "was busiest, hourly counts, or how many people crossed in the last N "
+            "minutes/hours of the footage. If they greet you, greet back and say "
+            "what you can report on. If the answer isn't in the report, say so "
+            "briefly.\n\n"
             "=== SESSION ANALYTICS REPORT ===\n" + context
         )
         convo = ""
@@ -83,6 +115,14 @@ class SurveillanceAssistant:
     def _intents(self):
         return [
             (lambda q: _has(q, "help") or _has(q, "what can you"), self._help),
+            # Temporal intents come first so "how many people in the last hour"
+            # routes to the time handler, not the plain people-in handler.
+            (lambda q: _last_window(q) is not None, self._last_window),
+            (lambda q: _has(q, "which hour", "what hour", "busiest hour", "busiest time",
+                            "what time", "which time", "peak hour", "peak time", "rush hour"),
+             self._busiest_hour),
+            (lambda q: _has(q, "by hour", "per hour", "each hour", "hourly", "hour by hour", "breakdown by hour"),
+             self._hourly),
             (lambda q: _people(q) and _has(q, "in", "enter", "entered", "inward"), self._people_in),
             (lambda q: _people(q) and _has(q, "out", "exit", "exited", "left", "outward"), self._people_out),
             (lambda q: _vehicles(q) and _has(q, "in", "enter", "entered", "inward"), self._vehicles_in),
@@ -186,6 +226,52 @@ class SurveillanceAssistant:
         parts = [f"{cls}: {row['in']} in / {row['out']} out" for cls, row in sorted(bd.items())]
         return Answer("Crossings by class — " + "; ".join(parts) + ".", "breakdown", bd)
 
+    def _busiest_hour(self, q: str) -> Answer:
+        tb = self.reports.time_breakdown(self.session_id)
+        if not tb.busiest:
+            return Answer("No crossings with timestamps are recorded yet.", "busiest_hour")
+        b = tb.busiest
+        # If the user asked about a minute/period specifically (or the footage is
+        # short), add the finest 1-minute peak too.
+        mins = self.reports.interval_breakdown(self.session_id, 1)
+        extra = ""
+        data = {"hour": b.label, "in": b.people_in, "out": b.people_out, "total": b.total}
+        if mins:
+            top_out = max(mins, key=lambda r: r["out"])
+            top_in = max(mins, key=lambda r: r["in"])
+            extra = (f" The single busiest minute for exits was {top_out['label']} "
+                     f"({top_out['out']} out); for entries {top_in['label']} ({top_in['in']} in).")
+            data["busiest_minute_out"] = top_out["label"]
+            data["busiest_minute_in"] = top_in["label"]
+        return Answer(
+            f"The busiest hour was {b.label}, with {b.total} crossings "
+            f"({b.people_in} in, {b.people_out} out).{extra}",
+            "busiest_hour", data,
+        )
+
+    def _hourly(self, _q: str) -> Answer:
+        tb = self.reports.time_breakdown(self.session_id)
+        if not tb.hours:
+            return Answer("No crossings with timestamps are recorded yet.", "hourly")
+        parts = [f"{h.label}: {h.people_in} in / {h.people_out} out" for h in tb.hours]
+        return Answer(
+            "Footfall by hour — " + "; ".join(parts) + ".",
+            "hourly",
+            {"hours": [vars(h) for h in tb.hours]},
+        )
+
+    def _last_window(self, q: str) -> Answer:
+        minutes = _last_window(q) or 60.0
+        w = self.reports.window_counts(self.session_id, minutes)
+        unit = f"{int(minutes)} minutes" if minutes < 60 else f"{minutes/60:.0f} hour(s)"
+        if w["total"] == 0 and w["since"] is None:
+            return Answer("No crossings with timestamps are recorded yet.", "last_window")
+        return Answer(
+            f"In the last {unit} of footage, {w['total']} people crossed "
+            f"({w['in']} in, {w['out']} out).",
+            "last_window", w,
+        )
+
     def _confidence(self, _q: str) -> Answer:
         s = self.repo.summary(self.session_id)
         c = s.avg_confidence if s else 0.0
@@ -193,8 +279,9 @@ class SurveillanceAssistant:
 
     def _help(self, _q: str) -> Answer:
         return Answer(
-            "Ask me about: people in/out, vehicles in/out, anomalies, the peak crowd, "
-            "the crowd forecast, a class breakdown, detection confidence, or a full summary.",
+            "Ask me about: people in/out, the busiest hour, footfall by hour, how "
+            "many crossed in the last N minutes/hours, anomalies, the peak crowd, "
+            "the crowd forecast, detection confidence, or a full summary.",
             "help",
         )
 
@@ -213,6 +300,28 @@ def _has(text: str, *keywords: str) -> bool:
         re.search(rf"\b{re.escape(k)}(s|es)?\b", text)
         for k in keywords
     )
+
+
+def _last_window(text: str) -> float | None:
+    """If the question asks about the *last* N minutes/hours, return N in minutes.
+
+    Matches e.g. "in the last 30 minutes", "last 2 hours", "past 15 mins". The
+    word "last" (or "past"/"recent") is required so it doesn't hijack plain
+    counting questions.
+    """
+    if not re.search(r"\b(last|past|recent)\b", text):
+        return None
+    m = re.search(r"\b(\d+(?:\.\d+)?)\s*(h|hr|hrs|hour|hours|m|min|mins|minute|minutes)\b", text)
+    if not m:
+        # "the last hour" / "the last minute" with no number -> default to 1.
+        if re.search(r"\blast\s+hour\b|\bpast\s+hour\b", text):
+            return 60.0
+        if re.search(r"\blast\s+minute\b", text):
+            return 1.0
+        return None
+    value = float(m.group(1))
+    unit = m.group(2)
+    return value * 60.0 if unit.startswith("h") else value
 
 
 def _people(text: str) -> bool:

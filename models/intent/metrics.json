@@ -1,0 +1,41 @@
+{
+  "approach": "transfer learning (MiniLM embeddings + neural head)",
+  "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+  "test_accuracy": 1.0,
+  "macro_f1": 1.0,
+  "cv5_mean": 0.9718,
+  "cv5_std": 0.0114,
+  "hard_eval_accuracy": 0.875,
+  "n_train": 879,
+  "n_test": 220,
+  "intents": [
+    "anomalies",
+    "busiest_hour",
+    "confidence",
+    "forecast",
+    "greet",
+    "help",
+    "hourly",
+    "last_window",
+    "peak",
+    "people_in",
+    "people_out",
+    "people_total",
+    "summary"
+  ],
+  "per_intent_f1": {
+    "anomalies": 1.0,
+    "busiest_hour": 1.0,
+    "confidence": 1.0,
+    "forecast": 1.0,
+    "greet": 1.0,
+    "help": 1.0,
+    "hourly": 1.0,
+    "last_window": 1.0,
+    "peak": 1.0,
+    "people_in": 1.0,
+    "people_out": 1.0,
+    "people_total": 1.0,
+    "summary": 1.0
+  }
+}
