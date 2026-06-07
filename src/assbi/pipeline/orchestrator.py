@@ -129,8 +129,11 @@ class SurveillancePipeline:
         confidence_n = 0
         started = time.perf_counter()
 
-        # A live stream runs until the user stops it (Ctrl+C). Catch that here so
-        # the session is still finalised — summary saved — instead of aborting.
+        # A live stream runs endlessly until the user stops it — Ctrl+C in the
+        # CLI, or the dashboard Stop button (which interrupts this loop via a
+        # Streamlit rerun). The summary is built + saved in ``finally`` below so
+        # the session is always finalised with whatever was processed, however
+        # the loop ended.
         try:
           for frame in source.frames():
             # Footage-relative timestamp for this frame (see ``start_time`` doc).
@@ -200,30 +203,31 @@ class SurveillancePipeline:
         except KeyboardInterrupt:
             logger.info("interrupted by user — finalising session %s (%d frames)",
                         session_id, frames_processed)
+        finally:
+            if writer is not None:
+                writer.release()
+            elapsed = time.perf_counter() - started
+            # True footage span = position of the last frame read / fps. Using
+            # the last index (not the emitted count) keeps duration correct under
+            # striding, where we only process every Nth frame of a long video.
+            summary = SessionSummary(
+                session_id=session_id,
+                source=source_label,
+                frames_processed=frames_processed,
+                duration_seconds=round((last_index + 1) / fps, 2),
+                people_in=self.line_counter.people_in,
+                people_out=self.line_counter.people_out,
+                vehicles_in=self.line_counter.vehicles_in,
+                vehicles_out=self.line_counter.vehicles_out,
+                peak_crowd=peak_crowd,
+                peak_crowd_frame=peak_frame,
+                anomalies=anomalies,
+                avg_confidence=round(confidence_sum / confidence_n, 3) if confidence_n else 0.0,
+            )
+            self.repository.save_summary(summary)
+            logger.info("session %s done in %.2fs wall, %d frames",
+                        session_id, elapsed, frames_processed)
 
-        if writer is not None:
-            writer.release()
-
-        elapsed = time.perf_counter() - started
-        # True footage span = position of the last frame read / fps. Using the
-        # last index (not the emitted count) keeps duration correct under
-        # striding, where we only process every Nth frame of a long video.
-        summary = SessionSummary(
-            session_id=session_id,
-            source=source_label,
-            frames_processed=frames_processed,
-            duration_seconds=round((last_index + 1) / fps, 2),
-            people_in=self.line_counter.people_in,
-            people_out=self.line_counter.people_out,
-            vehicles_in=self.line_counter.vehicles_in,
-            vehicles_out=self.line_counter.vehicles_out,
-            peak_crowd=peak_crowd,
-            peak_crowd_frame=peak_frame,
-            anomalies=anomalies,
-            avg_confidence=round(confidence_sum / confidence_n, 3) if confidence_n else 0.0,
-        )
-        self.repository.save_summary(summary)
-        logger.info("session %s done in %.2fs wall, %d frames", session_id, elapsed, frames_processed)
         return PipelineResult(summary=summary, line_breakdown=self.line_counter.breakdown())
 
     def _make_writer(self, render_path, source, annotator) -> VideoWriter | None:

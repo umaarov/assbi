@@ -143,7 +143,12 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
     if source_choice.startswith("Local") and not have_clip:
         c1.warning("No local clip yet. Download one:\n\n"
                    "`python -m assbi.cli download --duration 120 --cookies-file cookies.txt`")
-    n_frames = c2.slider("Frames to process", 100, 8000, 2000, step=100)
+    endless = c2.checkbox(
+        "♾️ Run until I press Stop", value=True,
+        help="Keep monitoring the live feed forever; press Stop to finish & save.",
+    )
+    n_frames = c2.slider("Max frames (bounded mode)", 100, 8000, 2000, step=100,
+                         disabled=endless)
     stride = c2.slider("Stride (every Nth frame)", 1, 10, 1,
                        help="Higher = cover more footage faster by skipping frames")
     session_name = c3.text_input("Session name", value="live")
@@ -154,14 +159,40 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
         help="Only for the live stream if you hit a bot check.",
     )
 
-    coverage = n_frames * stride / 30.0
-    st.caption(f"Will analyse ~{n_frames} frames (≈ {coverage:.0f}s of footage at "
-               f"stride {stride}). Local clip runs at full speed (~15-20 fps); the "
-               f"live YouTube stream is throttled and much slower.")
+    if endless:
+        st.caption("Endless live monitoring — runs until you press **Stop**, then "
+                   "the session is saved. Local clip loops aren't endless (a file "
+                   "ends); the live stream is.")
+    else:
+        coverage = n_frames * stride / 30.0
+        st.caption(f"Will analyse ~{n_frames} frames (≈ {coverage:.0f}s of footage at "
+                   f"stride {stride}), then stop automatically.")
 
-    if not st.button("▶ Start live monitor", type="primary"):
-        st.info("Pick a source and press **Start**. The run stops automatically "
-                "after the chosen number of frames.")
+    # Start/Stop control. Streamlit can't run a callback while the loop below is
+    # blocking, so Stop works by triggering a *rerun*: the next frame's
+    # ``video_slot.image()`` raises a RerunException that breaks the loop, and
+    # the pipeline's ``finally`` still saves the session. The on_click callbacks
+    # just flip the running flag so the rerun lands in the right branch.
+    if "live_running" not in st.session_state:
+        st.session_state.live_running = False
+
+    bcols = st.columns(2)
+    bcols[0].button("▶ Start live monitor", type="primary",
+                    disabled=st.session_state.live_running,
+                    on_click=lambda: st.session_state.update(live_running=True,
+                                                             just_stopped=False))
+    bcols[1].button("⏹ Stop", disabled=not st.session_state.live_running,
+                    on_click=lambda: st.session_state.update(live_running=False,
+                                                             just_stopped=True))
+
+    if not st.session_state.live_running:
+        if st.session_state.get("just_stopped"):
+            st.success("⏹ Live monitor stopped — session saved. Select it in the "
+                       "sidebar to explore the BI tabs.")
+            st.session_state.just_stopped = False
+        st.info("Pick a source and press **Start**. "
+                + ("Press **Stop** any time to finish & save."
+                   if endless else "It stops automatically after the chosen frames."))
         return
 
     if source_choice.startswith("Local"):
@@ -178,7 +209,7 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
 
     live_cfg = AppConfig.load("config/config.yaml")
     live_cfg.detection.backend = "yolo"
-    live_cfg.video.max_frames = n_frames
+    live_cfg.video.max_frames = None if endless else n_frames  # None = endless
     live_cfg.video.stride = stride
     live_cfg.privacy.mode = privacy_mode
     if cookies_browser != "none":
@@ -187,7 +218,8 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
     video_slot = st.empty()
     mcols = st.columns(6)
     ph = [c.empty() for c in mcols]
-    progress = st.progress(0.0, text="Connecting to source…")
+    status = st.empty()
+    progress = None if endless else st.progress(0.0, text="Connecting to source…")
 
     processed = {"n": 0}
 
@@ -195,6 +227,8 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
         if u.image is not None:
             # OpenCV is BGR; Streamlit expects RGB. Update the image every few
             # frames at high speed to keep the browser responsive on big runs.
+            # This st.image call is also where a pending Stop click interrupts
+            # the loop (Streamlit raises a rerun here).
             if processed["n"] % (2 if stride == 1 else 1) == 0:
                 video_slot.image(u.image[:, :, ::-1], channels="RGB", width="stretch")
         ph[0].metric("People IN", u.people_in)
@@ -205,8 +239,15 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
         ph[5].metric("⚠️ Anomaly" if u.is_anomaly else "Status",
                      "SURGE" if u.is_anomaly else "normal")
         processed["n"] += 1
-        progress.progress(min(1.0, processed["n"] / n_frames),
-                          text=f"Processing frame {processed['n']}/{n_frames}")
+        if endless:
+            status.caption(f"🔴 Live — {processed['n']} frames processed · "
+                           f"press **Stop** to finish & save.")
+        else:
+            progress.progress(min(1.0, processed["n"] / n_frames),
+                              text=f"Processing frame {processed['n']}/{n_frames}")
+        # A clean stop can also break via the return value; a Stop click usually
+        # interrupts earlier at the st.image call above.
+        return st.session_state.get("live_running", True)
 
     try:
         src = build_video_source(live_cfg, source)
@@ -216,7 +257,15 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
             with src:
                 result = pipeline.run(src, session_name, str(source), on_frame=on_frame)
     except Exception as exc:  # surface a clean message rather than a traceback
-        progress.empty()
+        # Let Streamlit's own control-flow exceptions (the rerun/stop raised when
+        # the Stop button is clicked) propagate — the session was already saved
+        # in the pipeline's ``finally``, and the rerun shows the idle/stopped UI.
+        if exc.__class__.__name__ in {"RerunException", "StopException", "RerunData"}:
+            raise
+        if progress is not None:
+            progress.empty()
+        status.empty()
+        st.session_state.live_running = False
         msg = str(exc)
         if "not a bot" in msg or "Sign in to confirm" in msg:
             st.error(
@@ -248,7 +297,12 @@ def _render_live(config: AppConfig, repo: SQLiteAnalyticsRepository) -> None:
             st.error(f"Live run failed: {exc}")
         return
 
-    progress.empty()
+    # Reached only when the run ends on its own (bounded mode, or a file source
+    # running out) — an endless live stop interrupts above and reruns instead.
+    if progress is not None:
+        progress.empty()
+    status.empty()
+    st.session_state.live_running = False
     s = result.summary
     st.success(
         f"✅ Done — {s.frames_processed} frames. "
