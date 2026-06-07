@@ -18,6 +18,9 @@ torch>=2.1                # pulled in by ultralytics; install matching CUDA buil
 # --- Video acquisition ---
 yt-dlp>=2024.1            # download / stream the assignment YouTube video
 
+# --- Dataset annotation / hosting (Roboflow hybrid workflow) ---
+roboflow>=1.1            # upload frames + auto-labels, download versioned YOLOv8 export
+
 # --- Chatbot NLU training (intent classifier; optional) ---
 sentence-transformers>=2.2  # pretrained MiniLM embeddings (transfer learning)
 scikit-learn>=1.3           # train/test split, cross-validation, metrics

@@ -28,6 +28,8 @@ data/*.part
 # Generated training artifacts (large: sampled images + run weights/plots)
 data/dataset/
 runs/
+# Roboflow downloaded dataset export (large: ~67MB of images)
+data/roboflow/
 
 # Secrets (never commit real keys)
 .env

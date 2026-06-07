@@ -259,8 +259,70 @@ def cmd_build_dataset(args: argparse.Namespace) -> int:
     except (FileNotFoundError, RuntimeError) as exc:
         print(f"✗ {exc}")
         return 1
-    print(f"\nReview/correct labels if needed, then train:\n"
-          f"  python -m assbi.cli train --data {stats.data_yaml}")
+    print("\nNext — pick one:")
+    print("  A) Review labels in Roboflow (recommended), then train on the version:")
+    print("       python -m assbi.cli roboflow-upload --project <your-project>")
+    print("       (review/correct in Roboflow → Generate Version → )")
+    print("       python -m assbi.cli roboflow-download --project <your-project> --version 1")
+    print(f"  B) Train directly on the local auto-labels:")
+    print(f"       python -m assbi.cli train --data {stats.data_yaml}")
+    return 0
+
+
+def cmd_roboflow_upload(args: argparse.Namespace) -> int:
+    """Upload the local YOLO dataset to Roboflow (hybrid: with auto-labels)."""
+    from .training import upload_dataset
+
+    try:
+        upload_dataset(
+            project=args.project,
+            workspace=args.workspace,
+            api_key=args.api_key,
+            dataset_dir=args.dataset,
+            with_labels=not args.no_labels,
+            batch_name=args.batch,
+            limit=args.limit,
+        )
+    except (FileNotFoundError, RuntimeError) as exc:
+        print(f"✗ {exc}")
+        return 1
+    return 0
+
+
+def cmd_roboflow_generate(args: argparse.Namespace) -> int:
+    """Generate a Roboflow dataset version (preprocessing + augmentation) via API."""
+    from .training import generate_version
+
+    try:
+        generate_version(
+            project=args.project,
+            workspace=args.workspace,
+            api_key=args.api_key,
+            augment=not args.no_augment,
+            resize=args.resize,
+        )
+    except (FileNotFoundError, RuntimeError) as exc:
+        print(f"✗ {exc}")
+        return 1
+    return 0
+
+
+def cmd_roboflow_download(args: argparse.Namespace) -> int:
+    """Download a generated Roboflow version as a YOLOv8 dataset for training."""
+    from .training import download_dataset
+
+    try:
+        download_dataset(
+            project=args.project,
+            version=args.version,
+            workspace=args.workspace,
+            api_key=args.api_key,
+            out_dir=args.out,
+            fmt=args.format,
+        )
+    except (FileNotFoundError, RuntimeError) as exc:
+        print(f"✗ {exc}")
+        return 1
     return 0
 
 
@@ -504,6 +566,41 @@ def build_parser() -> argparse.ArgumentParser:
     bd.add_argument("--conf", type=float, default=0.30, help="Min confidence to keep a label")
     bd.add_argument("--imgsz", type=int, default=640, help="Teacher inference size (default 640)")
     bd.set_defaults(func=cmd_build_dataset)
+
+    rfu = sub.add_parser("roboflow-upload",
+                         help="Upload the local dataset (with auto-labels) to Roboflow to review/annotate")
+    rfu.add_argument("--project", required=True,
+                     help="Roboflow project id (the slug in your project URL)")
+    rfu.add_argument("--workspace", help="Workspace id (omit to use the API key's default workspace)")
+    rfu.add_argument("--api-key", help="Roboflow private API key (or set $ROBOFLOW_API_KEY)")
+    rfu.add_argument("--dataset", default="data/dataset", help="Local YOLO dataset dir to upload")
+    rfu.add_argument("--no-labels", action="store_true",
+                     help="Upload raw images only (fully manual annotation in Roboflow)")
+    rfu.add_argument("--batch", default="assbi-temple-bar", help="Roboflow upload/annotate batch name")
+    rfu.add_argument("--limit", type=int, help="Only upload the first N images (quick test)")
+    rfu.set_defaults(func=cmd_roboflow_upload)
+
+    rfg = sub.add_parser("roboflow-generate",
+                         help="Generate a Roboflow dataset version (preprocessing + augmentation) via API")
+    rfg.add_argument("--project", required=True, help="Roboflow project id")
+    rfg.add_argument("--workspace", help="Workspace id (omit to use the API key's default workspace)")
+    rfg.add_argument("--api-key", help="Roboflow private API key (or set $ROBOFLOW_API_KEY)")
+    rfg.add_argument("--resize", type=int, default=416,
+                     help="Resize images to NxN in preprocessing (default 416; 0 to skip)")
+    rfg.add_argument("--no-augment", action="store_true",
+                     help="Skip augmentation (default adds flip + brightness + 3x copies)")
+    rfg.set_defaults(func=cmd_roboflow_generate)
+
+    rfd = sub.add_parser("roboflow-download",
+                         help="Download a generated Roboflow version as a YOLOv8 dataset for training")
+    rfd.add_argument("--project", required=True, help="Roboflow project id")
+    rfd.add_argument("--version", type=int, required=True,
+                     help="Version number you generated in Roboflow (1, 2, …)")
+    rfd.add_argument("--workspace", help="Workspace id (omit to use the API key's default workspace)")
+    rfd.add_argument("--api-key", help="Roboflow private API key (or set $ROBOFLOW_API_KEY)")
+    rfd.add_argument("--out", default="data/roboflow", help="Where to write the downloaded dataset")
+    rfd.add_argument("--format", default="yolov8", help="Export format (default yolov8)")
+    rfd.set_defaults(func=cmd_roboflow_download)
 
     tc = sub.add_parser("train-chatbot",
                         help="Train the neural intent classifier for the chatbot's NLU")

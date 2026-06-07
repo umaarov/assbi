@@ -1,7 +1,7 @@
 database_path: data/assbi.db
 detection:
-  backend: simulation
-  model_path: yolov8n.pt
+  backend: yolo
+  model_path: runs/assbi/roboflow/weights/best.pt
   confidence: 0.35
   iou: 0.5
   device: null
