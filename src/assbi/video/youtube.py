@@ -71,6 +71,28 @@ def is_youtube_url(source: object) -> bool:
     )
 
 
+def _best_live_hls(info: dict, max_height: int) -> str | None:
+    """Pick the best HLS (.m3u8) manifest URL from a live stream's formats.
+
+    A live broadcast's progressive ``info['url']`` only serves a short, expiring
+    window, so OpenCV stops after a few seconds. The HLS manifest instead points
+    ffmpeg at the rolling live playlist, which keeps serving fresh segments — a
+    genuinely endless feed. Prefer the highest video stream at/under max_height.
+    """
+    best: dict | None = None
+    for f in info.get("formats") or []:
+        if "m3u8" not in (f.get("protocol") or ""):
+            continue
+        if f.get("vcodec") in (None, "none"):
+            continue  # need video, not an audio-only rendition
+        height = f.get("height") or 0
+        if height and height > max_height:
+            continue
+        if best is None or height > (best.get("height") or 0):
+            best = f
+    return best.get("url") if best else None
+
+
 def _cookie_opts(cookies_from_browser: str | None, cookies_file: str | None) -> dict:
     """yt-dlp options to authenticate with cookies.
 
@@ -129,6 +151,12 @@ def stream_url(
         ydl_opts["remote_components"] = list(remote_components)
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:  # pragma: no cover - network I/O
         info = ydl.extract_info(url, download=False)
+        # For a *live* feed, the rolling HLS manifest is endless; the plain
+        # progressive ``url`` expires after a few seconds. Prefer HLS when live.
+        if info.get("is_live"):
+            hls = _best_live_hls(info, max_height)
+            if hls:
+                return hls
         direct = info.get("url")
         if direct:
             return direct

@@ -129,7 +129,10 @@ class SurveillancePipeline:
         confidence_n = 0
         started = time.perf_counter()
 
-        for frame in source.frames():
+        # A live stream runs until the user stops it (Ctrl+C). Catch that here so
+        # the session is still finalised — summary saved — instead of aborting.
+        try:
+          for frame in source.frames():
             # Footage-relative timestamp for this frame (see ``start_time`` doc).
             frame_ts = base_ts + timedelta(seconds=frame.index / fps)
             last_index = frame.index
@@ -194,6 +197,9 @@ class SurveillancePipeline:
             if progress_every and frames_processed % progress_every == 0:
                 logger.info("processed %d frames (live crowd=%d)",
                             frames_processed, snapshot.person_count)
+        except KeyboardInterrupt:
+            logger.info("interrupted by user — finalising session %s (%d frames)",
+                        session_id, frames_processed)
 
         if writer is not None:
             writer.release()

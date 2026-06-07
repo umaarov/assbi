@@ -67,15 +67,27 @@ def build_video_source(config: AppConfig, source: str | int | None) -> VideoSour
 
     from ..video.youtube import is_youtube_url, stream_url
 
+    reopen = None
     if is_youtube_url(source):
-        # Resolve to a direct CDN URL and stream it — no file on disk.
-        source = stream_url(
-            source,
-            max_height=config.video.height,
-            cookies_from_browser=config.youtube.cookies_from_browser,
-            cookies_file=config.youtube.cookies_file,
-            remote_components=config.youtube.remote_components,
-        )
+        # Resolve to a direct CDN URL and stream it — no file on disk. YouTube's
+        # bot/n-challenge makes this take ~10-20s the first time; tell the user
+        # so it doesn't look frozen.
+        watch_url = source
+        print("⏳ Resolving live stream (YouTube bot-check, ~10-20s)…")
+
+        def _resolve() -> str:
+            return stream_url(
+                watch_url,
+                max_height=config.video.height,
+                cookies_from_browser=config.youtube.cookies_from_browser,
+                cookies_file=config.youtube.cookies_file,
+                remote_components=config.youtube.remote_components,
+            )
+
+        source = _resolve()
+        # When the live URL expires / the feed drops, re-resolve and reconnect
+        # so monitoring runs endlessly instead of ending after a short window.
+        reopen = _resolve
 
     from ..video.opencv_source import OpenCVVideoSource
 
@@ -83,6 +95,7 @@ def build_video_source(config: AppConfig, source: str | int | None) -> VideoSour
         source=source,
         stride=config.video.stride,
         max_frames=config.video.max_frames,
+        reopen=reopen,
     )
 
 
